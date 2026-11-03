@@ -1,0 +1,510 @@
+{
+ "source": "wger.de exercise videos, CC BY-SA 4.0",
+ "clips": [
+  {
+   "file": "wger_12.mp4",
+   "ids": [
+    "Thigh_Adductor"
+   ],
+   "title": "Seated Hip Adduction",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/12/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_46.mp4",
+   "ids": [
+    "Barbell_Lunge"
+   ],
+   "title": "Barbell Lunges Standing",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/46/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_73.mp4",
+   "ids": [
+    "Barbell_Bench_Press_-_Medium_Grip"
+   ],
+   "title": "Bench Press",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/73/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_75.mp4",
+   "ids": [
+    "Dumbbell_Bench_Press"
+   ],
+   "title": "Benchpress Dumbbells",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/75/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_82.mp4",
+   "ids": [
+    "Reverse_Flyes"
+   ],
+   "title": "Bent-over Lateral Raises",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/82/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_91.mp4",
+   "ids": [
+    "Barbell_Curl"
+   ],
+   "title": "Biceps Curls With Barbell",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/91/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_92.mp4",
+   "ids": [
+    "Dumbbell_Bicep_Curl"
+   ],
+   "title": "Biceps Curls With Dumbbell",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/92/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_95.mp4",
+   "ids": [
+    "Standing_Biceps_Cable_Curl"
+   ],
+   "title": "Biceps Curl With Cable",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/95/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_194.mp4",
+   "ids": [
+    "Dips_-_Triceps_Version"
+   ],
+   "title": "Dips",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/194/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_205.mp4",
+   "ids": [
+    "Dumbbell_Lunges"
+   ],
+   "title": "Dumbbell Lunges Standing",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/205/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_211.mp4",
+   "ids": [
+    "Seated_Triceps_Press"
+   ],
+   "title": "Dumbbell Triceps Extension",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/211/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_222.mp4",
+   "ids": [
+    "Face_Pull"
+   ],
+   "title": "Facepull",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/222/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_245.mp4",
+   "ids": [
+    "Lying_Dumbbell_Tricep_Extension"
+   ],
+   "title": "Skullcrusher Dumbbells",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/245/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_246.mp4",
+   "ids": [
+    "EZ-Bar_Skullcrusher"
+   ],
+   "title": "Skullcrusher SZ-bar",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/246/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_257.mp4",
+   "ids": [
+    "Front_Barbell_Squat",
+    "Front_Squat_Clean_Grip"
+   ],
+   "title": "Front Squats",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/257/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_272.mp4",
+   "ids": [
+    "Hammer_Curls"
+   ],
+   "title": "Hammer Curls",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/272/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_275.mp4",
+   "ids": [
+    "Cable_Hammer_Curls_-_Rope_Attachment"
+   ],
+   "title": "Hammercurls on Cable",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/275/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_294.mp4",
+   "ids": [
+    "Barbell_Hip_Thrust"
+   ],
+   "title": "Hip Thrust",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/294/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_341.mp4",
+   "ids": [
+    "Smith_Machine_Squat"
+   ],
+   "title": "Squats on Multipress",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/341/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_348.mp4",
+   "ids": [
+    "Side_Lateral_Raise"
+   ],
+   "title": "Lateral Raises",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/348/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_349.mp4",
+   "ids": [
+    "Cable_Seated_Lateral_Raise"
+   ],
+   "title": "Lateral Rows on Cable, One Armed",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/349/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_365.mp4",
+   "ids": [
+    "Lying_Leg_Curls"
+   ],
+   "title": "Leg Curls (laying)",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/365/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_366.mp4",
+   "ids": [
+    "Seated_Leg_Curl"
+   ],
+   "title": "Leg Curls (sitting)",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/366/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_367.mp4",
+   "ids": [
+    "Standing_Leg_Curl"
+   ],
+   "title": "Leg Curls (standing)",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/367/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_371.mp4",
+   "ids": [
+    "Leg_Press"
+   ],
+   "title": "Leg Press",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/371/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_375.mp4",
+   "ids": [
+    "Hack_Squat"
+   ],
+   "title": "Leg Press on Hackenschmidt Machine",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/375/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_465.mp4",
+   "ids": [
+    "Preacher_Curl"
+   ],
+   "title": "Preacher Curls",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/465/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_475.mp4",
+   "ids": [
+    "Pullups"
+   ],
+   "title": "Pull-ups",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/475/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_507.mp4",
+   "ids": [
+    "Stiff-Legged_Dumbbell_Deadlift"
+   ],
+   "title": "Romanian Deadlift",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/507/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_512.mp4",
+   "ids": [
+    "Seated_Cable_Rows"
+   ],
+   "title": "Rowing seated, narrow grip",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/512/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_537.mp4",
+   "ids": [
+    "Incline_Dumbbell_Press"
+   ],
+   "title": "Incline Bench Press - Dumbbell",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/537/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_538.mp4",
+   "ids": [
+    "Barbell_Incline_Bench_Press_-_Medium_Grip"
+   ],
+   "title": "Incline Bench Press - Barbell",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/538/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_543.mp4",
+   "ids": [
+    "Machine_Shoulder_Military_Press"
+   ],
+   "title": "Shoulder Press, on Machine",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/543/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_567.mp4",
+   "ids": [
+    "Dumbbell_Shoulder_Press"
+   ],
+   "title": "Shoulder Press, Dumbbells",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/567/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_570.mp4",
+   "ids": [
+    "Barbell_Shrug"
+   ],
+   "title": "Shoulder Shrug",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/570/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_584.mp4",
+   "ids": [
+    "One_Arm_Dumbbell_Preacher_Curl"
+   ],
+   "title": "Single-arm Preacher Curl",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/584/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_590.mp4",
+   "ids": [
+    "Seated_Calf_Raise"
+   ],
+   "title": "Sitting Calf Raises",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/590/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_622.mp4",
+   "ids": [
+    "Standing_Calf_Raises"
+   ],
+   "title": "Standing Calf Raises",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/622/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_655.mp4",
+   "ids": [
+    "Tricep_Dumbbell_Kickback"
+   ],
+   "title": "Tricep Dumbbell Kickback",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/655/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_659.mp4",
+   "ids": [
+    "Cable_Rope_Overhead_Triceps_Extension"
+   ],
+   "title": "Triceps Extensions on Cable",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/659/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_802.mp4",
+   "ids": [
+    "Barbell_Walking_Lunge"
+   ],
+   "title": "Barbell Lunges Walking",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/802/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  },
+  {
+   "file": "wger_803.mp4",
+   "ids": [
+    "Cable_One_Arm_Tricep_Extension"
+   ],
+   "title": "One Arm Triceps Extensions on Cable",
+   "author": "Goulart",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source": "https://wger.de/exercise/803/view/",
+   "changes": "Trimmed to 10 s, scaled to 480p, audio removed."
+  }
+ ]
+}
