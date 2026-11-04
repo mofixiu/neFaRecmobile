@@ -25,6 +25,8 @@ const _months = [
   'December',
 ];
 
+const _weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
 /// Every saved routine with its days, for scheduling.
 final allRoutineDetailsProvider = FutureProvider<List<RoutineDetail>>((ref) async {
   final summaries = await ref.watch(routinesProvider.future);
@@ -39,7 +41,8 @@ final allRoutineDetailsProvider = FutureProvider<List<RoutineDetail>>((ref) asyn
 
 bool plannedOn(int weekdays, DateTime day) => weekdays & (1 << (day.weekday - 1)) != 0;
 
-/// A month of training: filled = trained, ring = planned.
+/// A month of training: solid orange = trained (streaks joined), a small
+/// dot = planned, ink = today.
 class CalendarView extends ConsumerStatefulWidget {
   const CalendarView({super.key});
 
@@ -69,12 +72,21 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
     final first = DateTime(_month.year, _month.month);
     final daysInMonth = DateUtils.getDaysInMonth(_month.year, _month.month);
     final lead = first.weekday - 1;
-    final cells = lead + daysInMonth;
+    final rows = ((lead + daysInMonth) / 7).ceil();
+    // The grid starts on the Monday before the 1st, so the edges show the
+    // neighbouring months' days, faint, instead of blank squares.
+    final gridStart = first.subtract(Duration(days: lead));
     final sessionsToday = history
         .where((h) => DateUtils.isSameDay(h.session.startedAt, _day))
         .toList();
     final planned = plannedFor(_day);
     final anyPlan = routines.any((r) => r.days.any((d) => d.day.weekdays != 0));
+
+    bool inMonth(DateTime d) => d.month == _month.month && d.year == _month.year;
+    final trainedThisMonth = history.where((h) => inMonth(h.session.startedAt)).length;
+    final plannedLeft = [
+      for (var n = 1; n <= daysInMonth; n++) DateTime(_month.year, _month.month, n),
+    ].where((d) => !d.isBefore(today) && !trained.contains(d) && plannedFor(d).isNotEmpty).length;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(NefaSpace.gutter, 22, NefaSpace.gutter, bottom),
@@ -82,119 +94,135 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SheetCard(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
+            padding: const EdgeInsets.fromLTRB(16, 16, 10, 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: _months[_month.month - 1],
+                                  style: NefaType.style(24, 900, tracking: -.8, color: c.ink),
+                                ),
+                                TextSpan(
+                                  text: '  ${_month.year}',
+                                  style: NefaType.style(15, 700, color: c.faint),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          // The summary doubles as the legend.
+                          Row(
+                            children: [
+                              _Dot(color: c.accent, size: 8),
+                              const SizedBox(width: 6),
+                              Text(
+                                plural(trainedThisMonth, 'session'),
+                                style: NefaType.style(12.5, 700, color: c.ink, tabular: true),
+                              ),
+                              if (plannedLeft > 0) ...[
+                                const SizedBox(width: 14),
+                                _Dot(color: c.accent, size: 5),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '$plannedLeft planned',
+                                  style: NefaType.style(12.5, 600, color: c.muted, tabular: true),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     RoundIconButton(
                       icon: Icons.chevron_left_rounded,
                       label: 'Previous month',
+                      size: 38,
                       onPressed: () =>
                           setState(() => _month = DateTime(_month.year, _month.month - 1)),
-                    ),
-                    Expanded(
-                      child: Text(
-                        '${_months[_month.month - 1]} ${_month.year}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
                     ),
                     RoundIconButton(
                       icon: Icons.chevron_right_rounded,
                       label: 'Next month',
+                      size: 38,
                       onPressed: () =>
                           setState(() => _month = DateTime(_month.year, _month.month + 1)),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    for (final d in 'MTWTFSS'.split(''))
-                      Expanded(
-                        child: Center(
-                          child: Text(d, style: NefaType.style(11, 800, color: c.faint)),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
-                  itemCount: (cells / 7).ceil() * 7,
-                  itemBuilder: (context, i) {
-                    final dayNum = i - lead + 1;
-                    if (dayNum < 1 || dayNum > daysInMonth) return const SizedBox();
-                    final d = DateTime(_month.year, _month.month, dayNum);
-                    final did = trained.contains(d);
-                    final plan = !did && !d.isBefore(today) && plannedFor(d).isNotEmpty;
-                    final sel = DateUtils.isSameDay(d, _day);
-                    return GestureDetector(
-                      onTap: () => setState(() => _day = d),
-                      child: Semantics(
-                        button: true,
-                        selected: sel,
-                        label:
-                            '$dayNum ${_months[d.month - 1]}${did
-                                ? ', trained'
-                                : plan
-                                ? ', planned'
-                                : ''}',
-                        child: Center(
-                          child: AnimatedContainer(
-                            duration: NefaMotion.small,
-                            width: 38,
-                            height: 38,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: did
-                                  ? c.accent
-                                  : sel
-                                  ? c.recessed
-                                  : Colors.transparent,
-                              border: Border.all(
-                                color: sel
-                                    ? c.ink
-                                    : plan
-                                    ? c.accent
-                                    : DateUtils.isSameDay(d, today)
-                                    ? c.faint
-                                    : Colors.transparent,
-                                width: sel || plan ? 1.6 : 1,
+                const SizedBox(height: 14),
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          for (final d in const ['M', 'T', 'W', 'T', 'F', 'S', 'S'])
+                            Expanded(
+                              child: Center(
+                                child: Text(d, style: NefaType.style(11.5, 700, color: c.faint)),
                               ),
                             ),
-                            child: Text(
-                              '$dayNum',
-                              style: NefaType.style(
-                                13,
-                                did || sel ? 800 : 600,
-                                color: did ? c.onAccent : c.ink,
-                                tabular: true,
-                              ),
-                            ),
-                          ),
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _Key(fill: c.accent, label: 'Trained'),
-                    const SizedBox(width: 18),
-                    _Key(ring: c.accent, label: 'Planned'),
-                  ],
+                      const SizedBox(height: 4),
+                      for (var r = 0; r < rows; r++)
+                        Row(
+                          children: [
+                            for (var col = 0; col < 7; col++)
+                              Expanded(
+                                child: Builder(
+                                  builder: (context) {
+                                    final d = DateUtils.addDaysToDate(gridStart, r * 7 + col);
+                                    final mine = inMonth(d);
+                                    final did = mine && trained.contains(d);
+                                    return _DayCell(
+                                      day: d,
+                                      inMonth: mine,
+                                      trained: did,
+                                      // Join back-to-back training days into a streak.
+                                      joinLeft:
+                                          did &&
+                                          col > 0 &&
+                                          trained.contains(DateUtils.addDaysToDate(d, -1)) &&
+                                          inMonth(DateUtils.addDaysToDate(d, -1)),
+                                      joinRight:
+                                          did &&
+                                          col < 6 &&
+                                          trained.contains(DateUtils.addDaysToDate(d, 1)) &&
+                                          inMonth(DateUtils.addDaysToDate(d, 1)),
+                                      planned:
+                                          mine &&
+                                          !did &&
+                                          !d.isBefore(today) &&
+                                          plannedFor(d).isNotEmpty,
+                                      today: DateUtils.isSameDay(d, today),
+                                      selected: mine && DateUtils.isSameDay(d, _day),
+                                      onTap: mine ? () => setState(() => _day = d) : null,
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 24),
+          Eyebrow(DateUtils.isSameDay(_day, today) ? 'Today' : _weekdays[_day.weekday - 1]),
+          const SizedBox(height: 4),
           Text(
             '${_day.day} ${_months[_day.month - 1]}',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -262,29 +290,119 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
   }
 }
 
-class _Key extends StatelessWidget {
-  const _Key({this.fill, this.ring, required this.label});
-  final Color? fill;
-  final Color? ring;
-  final String label;
+class _Dot extends StatelessWidget {
+  const _Dot({required this.color, required this.size});
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
+}
+
+class _DayCell extends StatelessWidget {
+  const _DayCell({
+    required this.day,
+    required this.inMonth,
+    required this.trained,
+    required this.joinLeft,
+    required this.joinRight,
+    required this.planned,
+    required this.today,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final DateTime day;
+  final bool inMonth;
+  final bool trained;
+  final bool joinLeft;
+  final bool joinRight;
+  final bool planned;
+  final bool today;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  static const _size = 38.0;
 
   @override
   Widget build(BuildContext context) {
     final c = context.nefa;
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: fill,
-            border: ring == null ? null : Border.all(color: ring!, width: 1.6),
+    final fill = trained
+        ? c.accent
+        : today && inMonth
+        ? c.ink
+        : Colors.transparent;
+    final ink = !inMonth
+        ? c.faint.withValues(alpha: .45)
+        : trained
+        ? c.onAccent
+        : today
+        ? c.paper
+        : c.ink;
+    final band = Expanded(
+      child: Container(height: _size, color: c.accent),
+    );
+    final gap = const Expanded(child: SizedBox());
+
+    return Semantics(
+      button: onTap != null,
+      selected: selected,
+      label:
+          '${day.day} ${_months[day.month - 1]}'
+          '${trained
+              ? ', trained'
+              : planned
+              ? ', planned'
+              : ''}${today ? ', today' : ''}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: SizedBox(
+          height: 48,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // The streak band runs edge to edge behind joined days.
+              // Slightly wider than the cell so neighbouring bands meet without a seam.
+              if (joinLeft || joinRight)
+                Transform.scale(
+                  scaleX: 1.04,
+                  child: Row(children: [joinLeft ? band : gap, joinRight ? band : gap]),
+                ),
+              AnimatedContainer(
+                duration: NefaMotion.small,
+                width: _size,
+                height: _size,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
+                foregroundDecoration: selected
+                    ? BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: trained || today ? c.paper : c.ink,
+                          width: trained || today ? 2.5 : 1.6,
+                        ),
+                      )
+                    : null,
+                child: Text(
+                  '${day.day}',
+                  style: NefaType.style(
+                    14,
+                    trained || today || selected ? 800 : 600,
+                    color: ink,
+                    tabular: true,
+                  ),
+                ),
+              ),
+              if (planned) Positioned(bottom: 3, child: _Dot(color: c.accent, size: 5)),
+            ],
           ),
         ),
-        const SizedBox(width: 6),
-        Text(label, style: NefaType.style(12, 700, color: c.muted)),
-      ],
+      ),
     );
   }
 }
