@@ -298,7 +298,6 @@ class _UpNextHero extends ConsumerWidget {
     final last = history.where((h) => h.session.routineId == detail.routine.id).firstOrNull;
     final lastIndex = detail.days.indexWhere((d) => d.day.id == last?.session.dayId);
     final day = planned?.$2 ?? detail.days[(lastIndex + 1) % detail.days.length];
-    final names = day.exercises.map((e) => e.exercise.name).toList();
 
     return BoardCard(
       onTap: () => openRoutine(context, detail.routine.id),
@@ -338,35 +337,9 @@ class _UpNextHero extends ConsumerWidget {
               _BoardStat(value: '~${_estimateMinutes(day)}', label: 'min'),
             ],
           ),
-          const SizedBox(height: 16),
-          for (final (i, n) in names.take(4).indexed)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 22,
-                    child: Text(
-                      '${i + 1}'.padLeft(2, '0'),
-                      style: NefaType.style(11, 800, color: c.accent, tabular: true),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      n,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: NefaType.style(14, 600, color: c.onBoard.withValues(alpha: .86)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          if (names.length > 4)
-            Text('+ ${names.length - 4} more', style: NefaType.style(13, 600, color: c.boardMuted)),
-          const SizedBox(height: 18),
+          const SizedBox(height: 22),
           NefaButton(
-            label: 'Start ${day.day.name.length > 16 ? 'workout' : day.day.name}',
+            label: 'Start workout',
             icon: Icons.play_arrow_rounded,
             onPressed: () => startWorkout(context, ref, detail, day),
           ),

@@ -326,18 +326,26 @@ class _VideoDemoState extends State<_VideoDemo> {
                   ],
                 ),
               ),
+              // The credit shows while paused, so a playing clip stays clean.
               Positioned(
                 right: 12,
                 bottom: 12,
-                child: GestureDetector(
-                  onTap: () => showVideoCredits(context, [widget.clip]),
-                  child: _Tag(
-                    children: [
-                      Text(
-                        widget.clip.credit,
-                        style: NefaType.style(9.5, 700, color: c.onBoard.withValues(alpha: .8)),
+                child: AnimatedOpacity(
+                  opacity: _ready && !value.isPlaying ? 1 : 0,
+                  duration: NefaMotion.small,
+                  child: IgnorePointer(
+                    ignoring: value.isPlaying,
+                    child: GestureDetector(
+                      onTap: () => showVideoCredits(context, [widget.clip]),
+                      child: _Tag(
+                        children: [
+                          Text(
+                            widget.clip.credit,
+                            style: NefaType.style(9.5, 700, color: c.onBoard.withValues(alpha: .8)),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),

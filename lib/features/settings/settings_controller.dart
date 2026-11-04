@@ -15,6 +15,7 @@ class Settings {
     this.haptics = true,
     this.onboarded = false,
     this.equipment = const {},
+    this.showDemos = true,
   });
 
   final ThemeMode themeMode;
@@ -29,6 +30,9 @@ class Settings {
   /// Equipment groups you have access to; empty means "anything".
   final Set<String> equipment;
 
+  /// Show the demo video or photos at the top of each workout page.
+  final bool showDemos;
+
   Settings copyWith({
     ThemeMode? themeMode,
     WeightUnit? unit,
@@ -37,6 +41,7 @@ class Settings {
     bool? haptics,
     bool? onboarded,
     Set<String>? equipment,
+    bool? showDemos,
   }) => Settings(
     themeMode: themeMode ?? this.themeMode,
     unit: unit ?? this.unit,
@@ -45,6 +50,7 @@ class Settings {
     haptics: haptics ?? this.haptics,
     onboarded: onboarded ?? this.onboarded,
     equipment: equipment ?? this.equipment,
+    showDemos: showDemos ?? this.showDemos,
   );
 
   Map<String, String> toPrefs() => {
@@ -55,6 +61,7 @@ class Settings {
     'haptics': '$haptics',
     'onboarded': '$onboarded',
     'equipment': equipment.join('|'),
+    'showDemos': '$showDemos',
   };
 
   factory Settings.fromPrefs(Map<String, String> p) {
@@ -68,6 +75,7 @@ class Settings {
       haptics: p['haptics'] != 'false',
       onboarded: p['onboarded'] == 'true',
       equipment: {...?p['equipment']?.split('|').where((e) => e.isNotEmpty)},
+      showDemos: p['showDemos'] != 'false',
     );
   }
 

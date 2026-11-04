@@ -22,51 +22,91 @@ Future<LibraryRecord?> showSwapSheet(BuildContext context, LibraryRecord origina
   );
 }
 
-class _Swap extends ConsumerWidget {
+class _Swap extends ConsumerStatefulWidget {
   const _Swap({required this.original});
   final LibraryRecord original;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Swap> createState() => _SwapState();
+}
+
+class _SwapState extends ConsumerState<_Swap> {
+  /// The equipment chips stay folded behind one row until you want them.
+  bool _filtering = false;
+
+  @override
+  Widget build(BuildContext context) {
     final c = context.nefa;
     final data = ref.watch(libraryDataProvider).valueOrNull;
     final have = ref.watch(settingsProvider).equipment;
     final options = data == null
         ? const <LibraryRecord>[]
-        : alternativesFor(original, data.records, equipment: have);
+        : alternativesFor(widget.original, data.records, equipment: have);
+    final summary = have.isEmpty
+        ? 'Anything'
+        : have.length <= 2
+        ? have.map((g) => '${g[0].toUpperCase()}${g.substring(1)}').join(', ')
+        : '${have.length} kinds';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Eyebrow('Equipment you have'),
+        Pressable(
+          onTap: () => setState(() => _filtering = !_filtering),
+          semanticLabel: 'Equipment: $summary',
+          scale: .985,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 11, 10, 11),
+            decoration: BoxDecoration(
+              color: c.recessed,
+              borderRadius: BorderRadius.circular(NefaRadii.md),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.tune_rounded, size: 18, color: c.muted),
+                const SizedBox(width: 10),
+                Text('Equipment', style: NefaType.style(14, 600, color: c.muted)),
+                const Spacer(),
+                Text(summary, style: NefaType.style(14, 700, color: c.ink)),
+                AnimatedRotation(
+                  turns: _filtering ? .5 : 0,
+                  duration: NefaMotion.small,
+                  child: Icon(Icons.expand_more_rounded, color: c.faint),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: NefaMotion.small,
+          curve: NefaMotion.ease,
+          alignment: Alignment.topCenter,
+          child: !_filtering
+              ? const SizedBox(width: double.infinity)
+              : Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final g in equipmentGroups.keys)
+                        Pill(
+                          label: g,
+                          selected: have.contains(g),
+                          onTap: () => ref.read(settingsProvider.notifier).update((s) {
+                            final next = {...s.equipment};
+                            next.contains(g) ? next.remove(g) : next.add(g);
+                            return s.copyWith(equipment: next);
+                          }),
+                        ),
+                    ],
+                  ),
+                ),
+        ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final g in equipmentGroups.keys)
-              Pill(
-                label: g,
-                selected: have.contains(g),
-                onTap: () => ref.read(settingsProvider.notifier).update((s) {
-                  final next = {...s.equipment};
-                  next.contains(g) ? next.remove(g) : next.add(g);
-                  return s.copyWith(equipment: next);
-                }),
-              ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Text(
-          have.isEmpty
-              ? 'Nothing selected: showing everything.'
-              : 'Only showing what you can do with these.',
-          style: NefaType.style(12.5, 500, color: c.muted),
-        ),
-        const SizedBox(height: 16),
         if (options.isEmpty)
           Text(
-            'No close match with that equipment. Select more equipment above.',
+            'No close match with that equipment. Add more under Equipment above.',
             style: NefaType.style(14, 500, color: c.muted, height: 1.45),
           ),
         for (final r in options)

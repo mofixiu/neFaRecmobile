@@ -21,7 +21,7 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    final text = tester.widget<Text>(find.textContaining('SETUP'));
+    final text = tester.widget<Text>(find.textContaining('Setup'));
     expect(text.overflow, TextOverflow.ellipsis);
     expect(tester.getSize(find.byType(Pill)).width, lessThanOrEqualTo(180));
   });

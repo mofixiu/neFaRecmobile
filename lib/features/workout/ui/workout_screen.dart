@@ -14,6 +14,7 @@ import '../../../shared/widgets/sheet.dart';
 import '../../../shared/widgets/surfaces.dart';
 import '../../account/state/account_controller.dart';
 import '../../formcheck/form_check_screen.dart';
+import '../../library/domain/library_data.dart';
 import '../../library/ui/exercise_demo.dart';
 import '../../library/ui/swap_sheet.dart';
 import '../../settings/settings_controller.dart';
@@ -396,13 +397,16 @@ class _ExercisePage extends ConsumerWidget {
         : ref.watch(previousProvider((e.exerciseId!, detail.session.id, e.variant))).valueOrNull;
     final last = index == detail.exercises.length - 1;
     final target = ex.sets.isEmpty ? null : ex.sets.first.target;
+    final showDemo = ref.watch(settingsProvider.select((s) => s.showDemos));
 
     return ListView(
       padding: EdgeInsets.fromLTRB(NefaSpace.gutter, 8, NefaSpace.gutter, bottomInset),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
-        ExerciseDemo(exerciseId: e.exerciseId, name: e.name, active: active),
-        const SizedBox(height: 18),
+        if (showDemo) ...[
+          ExerciseDemo(exerciseId: e.exerciseId, name: e.name, active: active, height: 172),
+          const SizedBox(height: 16),
+        ],
         Row(
           children: [
             Expanded(
@@ -423,61 +427,33 @@ class _ExercisePage extends ConsumerWidget {
               ),
           ],
         ),
-        const SizedBox(height: 8),
-        Text(e.name, style: Theme.of(context).textTheme.displaySmall),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        const SizedBox(height: 6),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (target != null)
-              Pill(
-                label: '${ex.sets.length} × ${target.label}${e.perSide ? ' each side' : ''}',
-                background: c.sheet,
-              ),
-            if (e.restSeconds != null && e.restSeconds! > 0)
-              Pill(
-                label: 'Rest ${formatClock(Duration(seconds: e.restSeconds!))}',
-                icon: Icons.timer_outlined,
-                background: c.sheet,
-              ),
-            if (e.tempo != null) Pill(label: 'Tempo ${e.tempo}', background: c.sheet),
-            if (record != null && record.instructions.isNotEmpty)
-              Pill(
-                label: 'How to',
-                icon: Icons.menu_book_outlined,
-                background: c.board,
-                foreground: c.onBoard,
-                onTap: () => showCues(context, record),
-              ),
-            if (record != null)
-              Pill(
-                label: 'Swap',
-                icon: Icons.swap_horiz_rounded,
-                background: c.sheet,
-                onTap: () async {
-                  final pick = await showSwapSheet(context, record);
-                  if (pick == null) return;
-                  await ref
-                      .read(sessionRepositoryProvider)
-                      .swapExercise(ex, exerciseId: pick.id, name: pick.name, timed: pick.timed);
-                },
-              ),
-            Pill(
-              label: e.variant == null ? 'Add setup' : 'Setup: ${e.variant}',
-              icon: Icons.precision_manufacturing_outlined,
-              background: c.sheet,
-              onTap: () => _editVariant(context, ref, e.id, e.variant),
+            Expanded(child: Text(e.name, style: Theme.of(context).textTheme.displaySmall)),
+            const SizedBox(width: 10),
+            RoundIconButton(
+              icon: Icons.more_horiz_rounded,
+              label: 'Exercise options',
+              size: 42,
+              filled: true,
+              onPressed: () => _options(context, ref, record, showDemo),
             ),
-            if (formCheckSupported(e.exerciseId))
-              Pill(
-                label: 'Form check',
-                icon: Icons.videocam_outlined,
-                background: c.accentWash,
-                foreground: c.accentInk,
-                onTap: () => openFormCheck(context, exerciseName: e.name),
-              ),
           ],
+        ),
+        const SizedBox(height: 6),
+        // One quiet line instead of a row of pills.
+        Text(
+          [
+            if (target != null)
+              '${ex.sets.length} × ${target.label}${e.perSide ? ' each side' : ''}',
+            if (e.restSeconds != null && e.restSeconds! > 0)
+              'Rest ${formatClock(Duration(seconds: e.restSeconds!))}',
+            if (e.tempo != null) 'Tempo ${e.tempo}',
+            if (e.variant != null) e.variant!,
+          ].join('  ·  '),
+          style: NefaType.style(14.5, 600, color: c.muted, tabular: true),
         ),
         if (e.notes != null && e.notes!.isNotEmpty) ...[
           const SizedBox(height: 14),
@@ -531,6 +507,78 @@ class _ExercisePage extends ConsumerWidget {
       ],
     );
   }
+
+  /// Everything you might do to an exercise, one tap away instead of a row
+  /// of pills.
+  Future<void> _options(
+    BuildContext context,
+    WidgetRef ref,
+    LibraryRecord? record,
+    bool showDemo,
+  ) async {
+    final ex = detail.exercises[index];
+    final e = ex.exercise;
+    final pick = await showNefaSheet<String>(
+      context,
+      title: e.name,
+      subtitle: 'Exercise options',
+      icon: Icons.tune_rounded,
+      builder: (context) => Column(
+        children: [
+          if (record != null && record.instructions.isNotEmpty)
+            const _OptionRow(
+              id: 'how',
+              icon: Icons.menu_book_outlined,
+              title: 'How to do it',
+              subtitle: 'Step-by-step cues',
+            ),
+          if (record != null)
+            const _OptionRow(
+              id: 'swap',
+              icon: Icons.swap_horiz_rounded,
+              title: 'Swap exercise',
+              subtitle: 'Same muscles, your equipment',
+            ),
+          _OptionRow(
+            id: 'setup',
+            icon: Icons.precision_manufacturing_outlined,
+            title: 'Machine or setup',
+            subtitle: e.variant ?? 'Note the machine, rack or attachment',
+          ),
+          if (formCheckSupported(e.exerciseId))
+            const _OptionRow(
+              id: 'form',
+              icon: Icons.videocam_outlined,
+              title: 'Form check',
+              subtitle: 'Film a set and check your depth',
+            ),
+          _OptionRow(
+            id: 'demo',
+            icon: showDemo ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            title: showDemo ? 'Hide demos' : 'Show demos',
+            subtitle: showDemo ? 'More room for your sets' : 'Video or photos above each exercise',
+          ),
+        ],
+      ),
+    );
+    if (pick == null || !context.mounted) return;
+    switch (pick) {
+      case 'how':
+        await showCues(context, record!);
+      case 'swap':
+        final swap = await showSwapSheet(context, record!);
+        if (swap == null) return;
+        await ref
+            .read(sessionRepositoryProvider)
+            .swapExercise(ex, exerciseId: swap.id, name: swap.name, timed: swap.timed);
+      case 'setup':
+        await _editVariant(context, ref, e.id, e.variant);
+      case 'form':
+        openFormCheck(context, exerciseName: e.name);
+      case 'demo':
+        await ref.read(settingsProvider.notifier).update((s) => s.copyWith(showDemos: !showDemo));
+    }
+  }
 }
 
 class _SetTable extends ConsumerWidget {
@@ -548,7 +596,8 @@ class _SetTable extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(14, 14, 10, 8),
       child: Column(
         children: [
-          if (previous != null)
+          // Lifts show last time in their own column; holds only here.
+          if (previous != null && timed)
             Padding(
               padding: const EdgeInsets.only(bottom: 10, left: 2),
               child: Row(
@@ -568,12 +617,12 @@ class _SetTable extends ConsumerWidget {
             ),
           Row(
             children: [
-              const SizedBox(width: 40, child: Eyebrow('Set')),
-              Expanded(child: Eyebrow(timed ? 'Target' : 'Last')),
-              if (!timed) SizedBox(width: 72, child: Center(child: Eyebrow(unit.name))),
+              const SizedBox(width: 40, child: ColumnLabel('Set')),
+              Expanded(child: ColumnLabel(timed ? 'Target' : 'Last time')),
+              if (!timed) SizedBox(width: 72, child: Center(child: ColumnLabel(unit.name))),
               SizedBox(
                 width: timed ? 110 : 60,
-                child: Center(child: Eyebrow(timed ? 'Held' : 'Reps')),
+                child: Center(child: ColumnLabel(timed ? 'Held' : 'Reps')),
               ),
               const SizedBox(width: 48),
             ],
@@ -970,47 +1019,108 @@ class _SuggestionCardState extends ConsumerState<_SuggestionCard> {
     );
     if (s == null) return const SizedBox();
     final unit = ex.sets.first.unit;
+    // One slim strip: the number, a short why, and a single tap to use it.
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+        padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
         decoration: BoxDecoration(
           color: c.accentWash,
           borderRadius: BorderRadius.circular(NefaRadii.lg - 4),
-          border: Border.all(color: c.accent.withValues(alpha: .35)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Icon(Icons.trending_up_rounded, size: 18, color: c.accentInk),
-                const SizedBox(width: 8),
-                Text('TRY TODAY', style: NefaType.eyebrow(color: c.accentInk)),
-                const Spacer(),
-                Text(s.label(unit), style: NefaType.value(20, color: c.ink)),
-              ],
+            Icon(Icons.trending_up_rounded, size: 20, color: c.accentInk),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Try ${s.label(unit)}',
+                    style: NefaType.style(15.5, 800, color: c.ink, tabular: true),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    s.reason,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: NefaType.style(12.5, 500, height: 1.35, color: c.accentInk),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(s.reason, style: NefaType.style(13, 500, height: 1.45, color: c.ink)),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Pill(
-                  label: 'Use it',
-                  icon: Icons.check_rounded,
-                  selected: true,
-                  onTap: () async {
-                    await ref
-                        .read(sessionRepositoryProvider)
-                        .applySuggestion(ex, weight: s.weight, seconds: s.seconds);
-                    setState(() => _hidden = true);
-                  },
-                ),
-                const SizedBox(width: 8),
-                Pill(label: 'Not today', onTap: () => setState(() => _hidden = true)),
-              ],
+            const SizedBox(width: 8),
+            Pill(
+              label: 'Use',
+              icon: Icons.check_rounded,
+              selected: true,
+              onTap: () async {
+                await ref
+                    .read(sessionRepositoryProvider)
+                    .applySuggestion(ex, weight: s.weight, seconds: s.seconds);
+                setState(() => _hidden = true);
+              },
             ),
+            IconButton(
+              tooltip: 'Not today',
+              visualDensity: VisualDensity.compact,
+              icon: Icon(Icons.close_rounded, size: 18, color: c.accentInk),
+              onPressed: () => setState(() => _hidden = true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OptionRow extends StatelessWidget {
+  const _OptionRow({
+    required this.id,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+  final String id;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.nefa;
+    return Pressable(
+      onTap: () => Navigator.pop(context, id),
+      semanticLabel: title,
+      scale: .985,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(color: c.recessed, shape: BoxShape.circle),
+              child: Icon(icon, size: 20, color: c.ink),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: NefaType.style(15.5, 700, color: c.ink)),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: NefaType.style(13, 500, color: c.muted),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: c.faint),
           ],
         ),
       ),

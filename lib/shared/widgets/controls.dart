@@ -374,10 +374,11 @@ class Pill extends StatelessWidget {
           if (icon != null) ...[Icon(icon, size: 14, color: fg), const SizedBox(width: 6)],
           Flexible(
             child: Text(
-              label.toUpperCase(),
+              // Sentence case: data like "middle back" reads "Middle back".
+              label.isEmpty ? label : '${label[0].toUpperCase()}${label.substring(1)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: NefaType.eyebrow(color: fg, size: 10.5),
+              style: NefaType.style(13, 700, height: 1.1, color: fg),
             ),
           ),
         ],
@@ -397,6 +398,16 @@ class Eyebrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       Text(text.toUpperCase(), style: NefaType.eyebrow(color: color ?? context.nefa.muted));
+}
+
+/// A column heading in a table: small, quiet, sentence case.
+class ColumnLabel extends StatelessWidget {
+  const ColumnLabel(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(text, style: NefaType.style(12.5, 600, color: context.nefa.muted));
 }
 
 /// Segmented control: recessed track, raised thumb that slides.
