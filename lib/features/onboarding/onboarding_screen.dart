@@ -91,7 +91,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         padding: const EdgeInsets.fromLTRB(NefaSpace.gutter, 12, 8, 0),
                         child: Row(
                           children: [
-                            const NefaWordmark(size: 24),
+                            const NefaLogo(size: 22),
                             const Spacer(),
                             TextButton(
                               onPressed: _finish,

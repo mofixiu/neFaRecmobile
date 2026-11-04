@@ -41,7 +41,7 @@ class TodayScreen extends ConsumerWidget {
                 height: 52,
                 child: Row(
                   children: [
-                    const NefaWordmark(size: 26),
+                    const NefaLogo(size: 24),
                     const Spacer(),
                     RoundIconButton(
                       icon: Icons.content_paste_go_rounded,
@@ -579,7 +579,9 @@ class _WeekStrip extends ConsumerWidget {
               Text(
                 week.isEmpty
                     ? 'Goal: $target this week'
-                    : '${week.length} of $target sessions'
+                    : week.length >= target
+                    ? '${plural(week.length, 'session')} · goal hit'
+                    : '${week.length} of ${plural(target, 'session')}'
                           '${volume > 0 ? ' · ${_compact(fromKg(volume, unit))} ${unit.name} moved' : ''}',
                 style: NefaType.style(12.5, 700, color: c.muted, tabular: true),
               ),
@@ -698,7 +700,7 @@ class _LastSession extends ConsumerWidget {
                 Text(s.title, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 4),
                 Text(
-                  '${formatClock(summary.duration)} · ${summary.doneSets} sets'
+                  '${formatClock(summary.duration)} · ${plural(summary.doneSets, 'set')}'
                   '${summary.volumeKg > 0 ? ' · ${_compact(fromKg(summary.volumeKg, unit))} ${unit.name}' : ''}',
                   style: NefaType.style(13, 600, color: c.muted, tabular: true),
                 ),

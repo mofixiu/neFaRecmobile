@@ -154,8 +154,8 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                 PageTitle(
                   detail.routine.name,
                   subtitle:
-                      '${detail.days.length} day${detail.days.length == 1 ? '' : 's'} · '
-                      '${detail.days.fold(0, (n, d) => n + d.exercises.length)} exercises',
+                      '${plural(detail.days.length, 'day')} · '
+                      '${plural(detail.days.fold(0, (n, d) => n + d.exercises.length), 'exercise')}',
                 ),
                 if (detail.days.length > 1) ...[
                   const SizedBox(height: 22),
@@ -184,7 +184,7 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                         ),
                       ),
                       Text(
-                        '${day.setCount} sets',
+                        plural(day.setCount, 'set'),
                         style: NefaType.style(13, 800, color: c.muted, tabular: true),
                       ),
                     ],

@@ -68,7 +68,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     final action = await showNefaSheet<String>(
       context,
       title: detail.session.title,
-      subtitle: '${detail.doneSets} of ${detail.totalSets} sets done',
+      subtitle: '${detail.doneSets} of ${plural(detail.totalSets, 'set')} done',
       icon: Icons.more_horiz_rounded,
       builder: (context) => Column(
         children: [
@@ -329,7 +329,7 @@ class _ExerciseRail extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
                 child: Semantics(
-                  label: '${e.exercise.name}, ${e.done} of ${e.sets.length} sets',
+                  label: '${e.exercise.name}, ${e.done} of ${plural(e.sets.length, 'set')}',
                   selected: i == page,
                   button: true,
                   child: AnimatedContainer(

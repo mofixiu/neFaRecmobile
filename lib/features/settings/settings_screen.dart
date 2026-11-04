@@ -156,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 10),
                 const _VideoCreditsRow(),
                 const SizedBox(height: 36),
-                const Center(child: NefaWordmark(size: 30)),
+                const Center(child: NefaTicketMark(width: 96)),
                 const SizedBox(height: 10),
                 Center(
                   child: Text(

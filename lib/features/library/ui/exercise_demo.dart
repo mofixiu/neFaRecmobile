@@ -272,8 +272,11 @@ class _VideoDemoState extends State<_VideoDemo> {
             children: [
               if (widget.poster != null)
                 ColorFiltered(
-                  colorFilter: ColorFilter.mode(c.sheet, BlendMode.multiply),
-                  child: Image(image: widget.poster!, fit: BoxFit.cover),
+                  colorFilter: ColorFilter.mode(
+                    c.isDark ? const Color(0xFFF1E9DA) : c.sheet,
+                    BlendMode.multiply,
+                  ),
+                  child: Image(image: widget.poster!, fit: BoxFit.cover, gaplessPlayback: true),
                 )
               else
                 ColoredBox(color: c.board),
@@ -507,7 +510,6 @@ class _CueCard extends StatelessWidget {
 
 /// Step-by-step technique, muscles and equipment.
 Future<void> showCues(BuildContext context, LibraryRecord record) {
-  final c = context.nefa;
   return showNefaSheet<void>(
     context,
     title: record.name,
@@ -516,40 +518,45 @@ Future<void> showCues(BuildContext context, LibraryRecord record) {
       if (record.primaryMuscles.isNotEmpty) record.primaryMuscles.join(', '),
     ].join(' · '),
     icon: Icons.menu_book_rounded,
-    builder: (context) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final (i, step) in record.instructions.indexed)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(color: c.board, shape: BoxShape.circle),
-                  child: Text('${i + 1}', style: NefaType.style(12, 900, color: c.onBoard)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(step, style: NefaType.style(14.5, 500, height: 1.5, color: c.ink)),
-                ),
-              ],
+    // Colours come from the sheet's own context so they follow a theme
+    // change while it is open.
+    builder: (context) {
+      final c = context.nefa;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final (i, step) in record.instructions.indexed)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 26,
+                    height: 26,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: c.board, shape: BoxShape.circle),
+                    child: Text('${i + 1}', style: NefaType.style(12, 900, color: c.onBoard)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(step, style: NefaType.style(14.5, 500, height: 1.5, color: c.ink)),
+                  ),
+                ],
+              ),
             ),
-          ),
-        if (record.instructions.isEmpty)
+          if (record.instructions.isEmpty)
+            Text(
+              'No written steps for this one yet.',
+              style: NefaType.style(14, 500, color: c.muted),
+            ),
+          const SizedBox(height: 8),
           Text(
-            'No written steps for this one yet.',
-            style: NefaType.style(14, 500, color: c.muted),
+            'These are general cues, not a single correct form for every body. Move within a range that feels controlled.',
+            style: NefaType.style(12.5, 500, height: 1.45, color: c.muted),
           ),
-        const SizedBox(height: 8),
-        Text(
-          'These are general cues, not a single correct form for every body. Move within a range that feels controlled.',
-          style: NefaType.style(12.5, 500, height: 1.45, color: c.muted),
-        ),
-      ],
-    ),
+        ],
+      );
+    },
   );
 }

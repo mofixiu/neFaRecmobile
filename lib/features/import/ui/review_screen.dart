@@ -243,7 +243,7 @@ class _RoutineEditorScreenState extends ConsumerState<RoutineEditorScreen> {
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            Pill(label: '${draft.exercises.length} exercises'),
+                            Pill(label: plural(draft.exercises.length, 'exercise')),
                             if (draft.days.length > 1) Pill(label: '${draft.days.length} days'),
                             if (confirm > 0)
                               Pill(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
+import '../../../core/models/training.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../shared/widgets/controls.dart';
 import '../../../shared/widgets/surfaces.dart';
@@ -117,7 +118,7 @@ class _RoutineCard extends StatelessWidget {
                 Text(
                   [
                     '${summary.dayCount} day${summary.dayCount == 1 ? '' : 's'}',
-                    '${summary.exerciseCount} exercises',
+                    plural(summary.exerciseCount, 'exercise'),
                     last == null ? 'not started' : 'last ${_ago(last)}',
                   ].join(' · '),
                   style: NefaType.style(13, 600, color: c.muted),

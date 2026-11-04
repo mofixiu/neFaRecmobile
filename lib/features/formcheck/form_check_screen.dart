@@ -103,26 +103,19 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
                       'This is a 2D estimate, not a safety check or a diagnosis.',
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: NefaButton(
-                        label: 'Record',
-                        icon: Icons.videocam_rounded,
-                        loading: _working,
-                        onPressed: _working ? null : () => _pick(ImageSource.camera),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: NefaButton(
-                        label: 'Choose video',
-                        icon: Icons.video_library_outlined,
-                        tone: ButtonTone.ghost,
-                        onPressed: _working ? null : () => _pick(ImageSource.gallery),
-                      ),
-                    ),
-                  ],
+                // Stacked full width so neither label is cut off.
+                NefaButton(
+                  label: 'Record a set',
+                  icon: Icons.videocam_rounded,
+                  loading: _working,
+                  onPressed: _working ? null : () => _pick(ImageSource.camera),
+                ),
+                const SizedBox(height: 10),
+                NefaButton(
+                  label: 'Choose a video',
+                  icon: Icons.video_library_outlined,
+                  tone: ButtonTone.ghost,
+                  onPressed: _working ? null : () => _pick(ImageSource.gallery),
                 ),
                 if (_working) ...[
                   const SizedBox(height: 18),

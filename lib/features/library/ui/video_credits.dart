@@ -30,6 +30,8 @@ Future<void> showVideoCredits(BuildContext context, List<VideoClip> clips) {
             'The adapted clips are shared under the same licence.',
             style: NefaType.style(12.5, 500, height: 1.45, color: c.muted),
           ),
+          const SizedBox(height: 6),
+          _Link(label: 'Licence', url: clips.first.licenseUrl),
         ],
       );
     },
@@ -57,7 +59,6 @@ class _Credit extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         _Link(label: 'Source', url: clip.source),
-        _Link(label: 'Licence', url: clip.licenseUrl),
       ],
     );
   }

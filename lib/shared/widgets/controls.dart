@@ -372,7 +372,14 @@ class Pill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[Icon(icon, size: 14, color: fg), const SizedBox(width: 6)],
-          Text(label.toUpperCase(), style: NefaType.eyebrow(color: fg, size: 10.5)),
+          Flexible(
+            child: Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: NefaType.eyebrow(color: fg, size: 10.5),
+            ),
+          ),
         ],
       ),
     );

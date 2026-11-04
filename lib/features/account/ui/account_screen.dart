@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/api_client.dart';
+import '../../../core/models/training.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../shared/widgets/controls.dart';
 import '../../../shared/widgets/sheet.dart';
@@ -391,7 +392,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                                           style: NefaType.style(14, 700, color: c.ink),
                                         ),
                                         Text(
-                                          '${b.summary['routines']} routines · ${b.summary['sessions']} sessions · '
+                                          '${plural(b.summary['routines'] ?? 0, 'routine')} · ${plural(b.summary['sessions'] ?? 0, 'session')} · '
                                           '${(b.sizeBytes / 1024).toStringAsFixed(0)} KB',
                                           style: NefaType.style(
                                             12,

@@ -84,6 +84,9 @@ String formatSeconds(int seconds, {bool compact = false}) {
   return '$m:${s.toString().padLeft(2, '0')}';
 }
 
+/// "1 set", "3 sets".
+String plural(int n, String one, [String? many]) => '$n ${n == 1 ? one : many ?? '${one}s'}';
+
 /// Clock face for timers: "0:45", "1:30", "12:04", "1:02:10".
 String formatClock(Duration d) {
   final total = d.inSeconds.abs();

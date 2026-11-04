@@ -211,8 +211,8 @@ class _SessionRow extends StatelessWidget {
                 Text(
                   [
                     formatClock(summary.duration),
-                    '${summary.exerciseCount} exercises',
-                    '${summary.doneSets} sets',
+                    plural(summary.exerciseCount, 'exercise'),
+                    plural(summary.doneSets, 'set'),
                     if (volume > 0) '${volume.round()} ${unit.name}',
                   ].join(' · '),
                   style: NefaType.style(12.5, 600, color: c.muted, tabular: true),

@@ -146,9 +146,10 @@ class ReceiptView extends StatelessWidget {
             ),
           ),
         ),
+        // Over the barcode corner, clear of every number.
         Positioned(
-          right: 18,
-          bottom: 128,
+          right: 12,
+          bottom: 10,
           child: Opacity(
             opacity: stamp.clamp(0, 1),
             child: Transform.scale(

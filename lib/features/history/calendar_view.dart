@@ -212,7 +212,7 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
                     child: Text(h.session.title, style: Theme.of(context).textTheme.titleMedium),
                   ),
                   Text(
-                    '${formatClock(h.duration)} · ${h.doneSets} sets',
+                    '${formatClock(h.duration)} · ${plural(h.doneSets, 'set')}',
                     style: NefaType.style(12.5, 600, color: c.muted, tabular: true),
                   ),
                 ],
