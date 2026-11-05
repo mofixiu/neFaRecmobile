@@ -155,13 +155,26 @@ class ExerciseIndex {
       _aliases.putIfAbsent(normalizeName(e.name), () => e.id);
     }
     _singularAliases = {for (final entry in _aliases.entries) _singular(entry.key): entry.value};
-    _keys = _aliases.keys.toList(growable: false);
+    _keys = [
+      for (final MapEntry(:key, :value) in _aliases.entries)
+        _Key(
+          key,
+          value,
+          key.split(' ').map(_singular).toList(growable: false),
+          key.split(' ').toSet().intersection(_equipmentWords),
+          _byId[value]!.curated,
+        ),
+    ];
   }
 
   final _byId = <String, IndexedExercise>{};
   final _aliases = <String, String>{};
   late final Map<String, String> _singularAliases;
-  late final List<String> _keys;
+  late final List<_Key> _keys;
+
+  /// Routines repeat names, and the parser asks about some lines twice.
+  final _matches = <String, ExerciseMatch>{};
+  static const _matchCacheSize = 1024;
 
   IndexedExercise? byId(String id) => _byId[id];
   Iterable<IndexedExercise> get all => _byId.values;
@@ -171,6 +184,14 @@ class ExerciseIndex {
   static const _floor = .72;
 
   ExerciseMatch match(String query) {
+    final cached = _matches[query];
+    if (cached != null) return cached;
+    final result = _match(query);
+    if (_matches.length >= _matchCacheSize) _matches.clear();
+    return _matches[query] = result;
+  }
+
+  ExerciseMatch _match(String query) {
     final normalized = normalizeName(query);
     if (normalized.isEmpty) {
       return ExerciseMatch(status: MatchStatus.unmatched, query: query);
@@ -223,22 +244,26 @@ class ExerciseIndex {
 
   Iterable<MatchCandidate> _ranked(String query, {String? exclude, bool substringBoost = false}) {
     final best = <String, double>{};
-    final queryTokens = query.split(' ').toSet();
-    final queryEquipment = queryTokens.intersection(_equipmentWords);
-    for (final key in _keys) {
-      final id = _aliases[key]!;
+    final queryEquipment = query.split(' ').toSet().intersection(_equipmentWords);
+    final queryTokens = query.split(' ').map(_singular).toList(growable: false);
+    // Key words repeat across ~2,000 names ("press", "dumbbell"), so each
+    // word-to-word score is worked out once per query.
+    final forwardMemo = <String, double>{};
+    final backwardMemo = <String, double>{};
+    for (final k in _keys) {
+      final id = k.id;
       if (id == exclude) continue;
-      var score = similarity(query, key);
-      if (substringBoost && key.contains(query)) score = math.max(score, .9);
-      final keyTokens = key.split(' ').toSet();
-      final keyEquipment = keyTokens.intersection(_equipmentWords);
+      var score = query == k.key
+          ? 1.0
+          : _blend(jaroWinkler(query, k.key), queryTokens, k.tokens, forwardMemo, backwardMemo);
+      if (substringBoost && k.key.contains(query)) score = math.max(score, .9);
       // "dumbbell press" must not quietly become a barbell lift.
       if (queryEquipment.isNotEmpty &&
-          keyEquipment.isNotEmpty &&
-          queryEquipment.intersection(keyEquipment).isEmpty) {
+          k.equipment.isNotEmpty &&
+          queryEquipment.intersection(k.equipment).isEmpty) {
         score *= .78;
       }
-      if (_byId[id]!.curated) score += .015;
+      if (k.curated) score += .015;
       if (score > (best[id] ?? 0)) best[id] = score;
     }
     final list =
@@ -248,18 +273,45 @@ class ExerciseIndex {
   }
 }
 
+class _Key {
+  const _Key(this.key, this.id, this.tokens, this.equipment, this.curated);
+  final String key;
+  final String id;
+  final List<String> tokens;
+  final Set<String> equipment;
+  final bool curated;
+}
+
 /// Blend of whole-string Jaro-Winkler and a soft token overlap, in 0..1.
 double similarity(String a, String b) {
   if (a == b) return 1;
-  final whole = jaroWinkler(a, b);
-  final ta = a.split(' ').map(_singular).toList();
-  final tb = b.split(' ').map(_singular).toList();
-  double soft(List<String> from, List<String> to) {
+  return _blend(
+    jaroWinkler(a, b),
+    a.split(' ').map(_singular).toList(),
+    b.split(' ').map(_singular).toList(),
+  );
+}
+
+double _blend(
+  double whole,
+  List<String> ta,
+  List<String> tb, [
+  Map<String, double>? forwardMemo,
+  Map<String, double>? backwardMemo,
+]) {
+  double soft(List<String> from, List<String> to, Map<String, double>? memo) {
     var sum = 0.0;
     for (final t in from) {
       var m = 0.0;
       for (final u in to) {
-        final s = t == u ? 1.0 : jaroWinkler(t, u);
+        final double s;
+        if (t == u) {
+          s = 1.0;
+        } else if (memo == null) {
+          s = jaroWinkler(t, u);
+        } else {
+          s = memo['$t\u0000$u'] ??= jaroWinkler(t, u);
+        }
         if (s > m) m = s;
       }
       // Near misses on short words ("row" vs "raw") count for little.
@@ -268,8 +320,8 @@ double similarity(String a, String b) {
     return from.isEmpty ? 0 : sum / from.length;
   }
 
-  final forward = soft(ta, tb);
-  final backward = soft(tb, ta);
+  final forward = soft(ta, tb, forwardMemo);
+  final backward = soft(tb, ta, backwardMemo);
   final tokens = (forward * .55 + backward * .45);
   return whole * .35 + tokens * .65;
 }

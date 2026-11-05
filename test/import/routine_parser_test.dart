@@ -55,6 +55,19 @@ void main() {
     expect(r.issues.single.line, 'foo bar baz');
   });
 
+  test('numbers too big for an int are capped, not thrown', () {
+    for (final text in [
+      'Squat 3x99999999999999999999',
+      'Squat 3x5-99999999999999999999',
+      'Squat 3x 10,99999999999999999999',
+      '99999999999999999999 rounds\nSquat 5 reps',
+      'Plank 3 x 99999999999999999999 sec',
+    ]) {
+      expect(() => parser.parse(text), returnsNormally, reason: text);
+    }
+    expect(parser.parse('Squat 99999999999999999999x5').exercises.single.sets, 20);
+  });
+
   test('dumbbell shorthand never turns into a barbell lift', () {
     final m = index.match('DB press');
     expect(m.exercise?.equipment, 'dumbbell');

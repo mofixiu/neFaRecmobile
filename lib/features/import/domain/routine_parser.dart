@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../../core/models/training.dart';
 import 'exercise_index.dart';
 import 'parsed_routine.dart';
@@ -78,7 +80,7 @@ class RoutineParser {
 
       final rounds = RegExp(r'^(\d+)\s*(?:rounds?|sets?)(?:\s+of)?\s*:?$').firstMatch(lower);
       if (rounds != null) {
-        openRounds = int.parse(rounds.group(1)!);
+        openRounds = _int(rounds.group(1))!.clamp(1, 20);
         continue;
       }
 
@@ -345,7 +347,7 @@ class RoutineParser {
     }
     if ((m = RegExp('(\\d+)$x(\\d+(?:\\s*[,/]\\s*\\d+)+)').firstMatch(s)) != null) {
       claim(m!);
-      final reps = m[2]!.split(RegExp(r'[,/]')).map((e) => int.parse(e.trim())).toList();
+      final reps = m[2]!.split(RegExp(r'[,/]')).map((e) => _int(e.trim())!).toList();
       final sets = _int(m[1])!;
       final lo = reps.reduce((a, b) => a < b ? a : b);
       final hi = reps.reduce((a, b) => a > b ? a : b);
@@ -412,14 +414,19 @@ class RoutineParser {
   int _toSeconds(String value, String? unit, {int bareMeansMinutesUpTo = 0}) {
     if (value.contains(':')) {
       final p = value.split(':');
-      return int.parse(p[0]) * 60 + int.parse(p[1]);
+      return _int(p[0])! * 60 + _int(p[1])!;
     }
-    final v = double.parse(value);
+    final v = math.min(double.parse(value), _maxNumber.toDouble());
     final minutes = unit == null ? v <= bareMeansMinutesUpTo : unit.startsWith('m') || unit == "'";
     return (minutes ? v * 60 : v).round();
   }
 
-  static int? _int(String? s) => s == null ? null : int.tryParse(s);
+  /// Numbers past this are typos, and capping them keeps "3x99999999999999999999"
+  /// from overflowing.
+  static const _maxNumber = 99999;
+
+  static int? _int(String? s) =>
+      s == null ? null : math.min(int.tryParse(s) ?? _maxNumber, _maxNumber);
 
   /// Lowercases and folds look-alike characters one-for-one, so match offsets in
   /// the folded string line up with the original.
