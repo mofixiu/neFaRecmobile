@@ -755,9 +755,10 @@ packages:
   paper_kit:
     dependency: "direct main"
     description:
-      path: "../../../My Blog/kit/paper_kit"
-      relative: true
-    source: path
+      name: paper_kit
+      sha256: "05c897409f9c7f7b8d9301a6ed9c18b83855abd4ebc908dec1110f2c0386b3a9"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.2.1"
   path:
     dependency: transitive
