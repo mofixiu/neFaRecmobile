@@ -71,6 +71,8 @@ class RoutineParser {
 
       final lower = _fold(line);
       if (lower.startsWith('shared from nefarec')) continue;
+      // Chat screenshots: message times, read ticks and status lines are not exercises.
+      if (_chatChrome.hasMatch(lower)) continue;
 
       if (RegExp(r'^(super\s?set|ss|circuit|giant\s?set|tri\s?set)\b').hasMatch(lower) &&
           !_setsPattern.hasMatch(lower)) {
@@ -424,6 +426,10 @@ class RoutineParser {
   /// Numbers past this are typos, and capping them keeps "3x99999999999999999999"
   /// from overflowing.
   static const _maxNumber = 99999;
+
+  static final _chatChrome = RegExp(
+    r'^(?:(?:edited\s+)?\d{1,2}[:.]\d{2}\s*(?:am|pm)?\s*[✓✔√/]*|today|yesterday|online|typing\.*|last seen.*)$',
+  );
 
   static int? _int(String? s) =>
       s == null ? null : math.min(int.tryParse(s) ?? _maxNumber, _maxNumber);

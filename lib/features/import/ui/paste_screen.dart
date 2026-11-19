@@ -51,9 +51,9 @@ class _PasteScreenState extends ConsumerState<PasteScreen> {
   /// note so you can fix anything the scan got wrong before it is parsed.
   Future<void> _scan(Future<String?> Function() pickPath, {bool pdf = false}) async {
     const vision = VisionService();
-    if (!vision.isSupported) {
+    if (!vision.readsText) {
       setState(
-        () => _error = 'Photo and PDF import work on iPhone for now. Paste the text instead.',
+        () => _error = 'Photo and PDF import need iPhone or Android. Paste the text instead.',
       );
       return;
     }

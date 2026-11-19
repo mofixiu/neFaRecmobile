@@ -2,14 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-/// On-device text and body-pose recognition (Apple Vision on iOS). Nothing
-/// leaves the phone. Android support is not built yet: [isSupported] is false.
+/// On-device text and body-pose recognition. Nothing leaves the phone.
+/// Text uses Apple Vision on iOS and ML Kit on Android; body pose is iOS only.
 class VisionService {
   const VisionService();
 
   static const _channel = MethodChannel('nefarec/vision');
 
-  bool get isSupported => Platform.isIOS;
+  /// Photo, screenshot and PDF text.
+  bool get readsText => Platform.isIOS || Platform.isAndroid;
+
+  /// Body pose for the squat form check.
+  bool get readsPose => Platform.isIOS;
 
   /// Text in a photo or screenshot, line by line, top to bottom.
   Future<String> textFromImage(String path) async {

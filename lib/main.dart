@@ -6,6 +6,7 @@ import 'app.dart';
 import 'core/db/database.dart';
 import 'core/providers.dart';
 import 'core/services/alerts.dart';
+import 'core/services/demo_seed.dart';
 import 'features/settings/settings_controller.dart';
 
 Future<void> main() async {
@@ -13,6 +14,11 @@ Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   final db = NefaDatabase();
+  if (DemoSeed.enabled) {
+    final seeding = ProviderContainer(overrides: [databaseProvider.overrideWithValue(db)]);
+    await DemoSeed.run(db, await seeding.read(exerciseIndexProvider.future));
+    seeding.dispose();
+  }
   final settings = await Settings.load(db);
   final alerts = AlertService();
   await alerts.init();

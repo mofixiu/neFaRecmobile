@@ -127,4 +127,23 @@ void main() {
     expect(fieldAcc, greaterThanOrEqualTo(.9));
     expect(nameAcc, greaterThanOrEqualTo(.9));
   });
+
+  test('a chat screenshot ignores message times and status lines', () {
+    const ocr = '''Coach Tobi
+online
+Today
+Coach send me push
+day again
+7:02 AM
+Push day
+Bench press 4x6-8, rest 2 min
+Incline DB press 3x10
+Plank 3 x 45 sec
+7:05 AM ✓✓
+19:06
+Yesterday''';
+    final r = parser.parse(ocr);
+    expect(r.days.map((d) => d.name), ['Push day']);
+    expect(r.exercises.map((e) => e.typedName), ['Bench press', 'Incline DB press', 'Plank']);
+  });
 }

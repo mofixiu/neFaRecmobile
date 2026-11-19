@@ -1,6 +1,16 @@
 # neFaRec
 
-A workout tracker that starts from the routine you already have. Most people's routine lives in a note, a WhatsApp message or an AI chat. You paste it in, check what neFaRec read, and train it with a set table that remembers last time's numbers.
+**For people who train from a routine sitting in WhatsApp, Notes or an AI chat.** Workout apps make you rebuild that routine exercise by exercise, so most people give up and scroll back through the chat at the gym. neFaRec takes the routine as it is: paste it in, check what it read, and train it with a set table that remembers last time's numbers.
+
+**[Download the Android APK](https://github.com/mofixiu/neFaRecmobile/releases/latest)** · [Watch the demo](https://github.com/mofixiu/neFaRecmobile/releases/latest) · [Tap through it in your browser](https://mofiyinebo.com)
+
+### Try it in a minute
+
+1. Install the APK (Android 7+; allow installs from your browser when asked).
+2. Tap **Paste a routine**, then **Try the example**, or paste your own routine from WhatsApp.
+3. Check the review screen, save, and start a workout. Log a few sets and finish to get the receipt.
+
+No account, no internet needed. Everything stays on the phone.
 
 <p>
   <img src="docs/screenshots/03-paste-filled.webp" width="180" alt="A routine pasted in as plain text" />
@@ -14,7 +24,7 @@ A workout tracker that starts from the routine you already have. Most people's r
 
 ## What it does
 
-- **Import a routine as text.** Paste it, or pick a photo or PDF and the app reads the text on the phone with Apple's Vision. The parser finds days, exercises, sets, rep ranges, timed holds and rest, and the review screen highlights every value it had to fill in so you can fix it before you save.
+- **Import a routine as text.** Paste it, or pick a photo, screenshot or PDF and the app reads the text on the phone (Apple Vision on iPhone, ML Kit on Android). The parser finds days, exercises, sets, rep ranges, timed holds and rest, and the review screen highlights every value it had to fill in so you can fix it before you save.
 - **Train it.** Each set shows what you did last time. Rest is a scoreboard that counts into overtime, holds like planks get their own timer, and the rest timer carries on in the Dynamic Island and on the lock screen as a Live Activity.
 - **See your history.** Each session ends as a receipt. History has weekly volume, a muscle split, trend charts for each lift and a training calendar.
 - **Look up any move.** 884 exercises with steps and photos, 42 looping demo videos, and swaps for the equipment you have.
@@ -27,10 +37,11 @@ The parser is also published on its own as [workout_parser](https://pub.dev/pack
 
 | Area | Choice |
 | --- | --- |
-| App | Flutter and Dart, iOS first (Android builds, but photo/PDF import and the form check are iPhone-only) |
+| App | Flutter and Dart, on iPhone and Android (the squat form check and Live Activity are iPhone-only) |
 | State | Riverpod |
 | Storage | Drift (SQLite), with secure storage for the account token |
 | Native iOS | SwiftUI and ActivityKit for the Live Activity; Vision and PDFKit for text recognition and body pose |
+| Native Android | ML Kit text recognition (bundled model) and PdfRenderer, in Kotlin behind the same channel |
 | Look | [paper_kit](https://pub.dev/packages/paper_kit), my handmade-paper UI kit |
 | Backend | [neFaRec API](https://github.com/mofixiu/neFaRecbackend): Node, TypeScript and PostgreSQL, only for accounts and backups |
 
@@ -63,6 +74,7 @@ The tests cover the parser, the rest and hold timer, progression, analytics, the
 - **Database code**, after editing `lib/core/db/database.dart`: `dart run build_runner build --delete-conflicting-outputs`
 - **App icon:** `flutter test tool/icon/render_icon_test.dart`, then `dart run flutter_launcher_icons`
 - **Demo videos:** `python3 tool/videos/fetch_wger.py` (needs ffmpeg)
+- **Sample history for screen recordings:** build with `--dart-define=NEFAREC_DEMO_SEED=true` on a fresh install to get a few weeks of made-up sessions. Never use it for a release build.
 
 ## Credits
 

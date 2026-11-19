@@ -21,7 +21,7 @@ const _squats = {
 };
 
 bool formCheckSupported(String? exerciseId) =>
-    exerciseId != null && _squats.contains(exerciseId) && const VisionService().isSupported;
+    exerciseId != null && _squats.contains(exerciseId) && const VisionService().readsPose;
 
 void openFormCheck(BuildContext context, {required String exerciseName}) =>
     push(context, FormCheckScreen(exerciseName: exerciseName));
