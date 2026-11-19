@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -6,38 +8,28 @@ import '../../core/theme/tokens.dart';
 import '../../shared/widgets/controls.dart';
 import '../../shared/widgets/surfaces.dart';
 import '../app/navigation.dart';
-import 'squat_analysis.dart';
+import 'form_analysis.dart';
 import '../../shared/widgets/motion.dart';
 
-/// Squat variations the first analysis understands. Others are not offered.
-const _squats = {
-  'Barbell_Squat',
-  'Bodyweight_Squat',
-  'Goblet_Squat',
-  'Front_Squat_Clean_Grip',
-  'Dumbbell_Squat',
-  'Barbell_Full_Squat',
-  'Box_Squat',
-};
-
 bool formCheckSupported(String? exerciseId) =>
-    exerciseId != null && _squats.contains(exerciseId) && const VisionService().readsPose;
+    movementFor(exerciseId) != null && const VisionService().readsPose;
 
-void openFormCheck(BuildContext context, {required String exerciseName}) =>
-    push(context, FormCheckScreen(exerciseName: exerciseName));
+void openFormCheck(BuildContext context, {required String exerciseName, required String exerciseId}) =>
+    push(context, FormCheckScreen(exerciseName: exerciseName, movement: movementFor(exerciseId)!));
 
-/// Form check (beta): film a squat side-on, get measured observations.
+/// Form check (beta): film a set side-on, get measured observations.
 /// Runs entirely on the phone and never stores the video.
 class FormCheckScreen extends StatefulWidget {
-  const FormCheckScreen({super.key, required this.exerciseName});
+  const FormCheckScreen({super.key, required this.exerciseName, required this.movement});
   final String exerciseName;
+  final Movement movement;
 
   @override
   State<FormCheckScreen> createState() => _FormCheckScreenState();
 }
 
 class _FormCheckScreenState extends State<FormCheckScreen> {
-  SquatReport? _report;
+  FormReport? _report;
   bool _working = false;
   String? _error;
 
@@ -55,7 +47,7 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
     try {
       final clip = await const VisionService().poseFromVideo(video.path, fps: 12);
       if (!mounted) return;
-      setState(() => _report = analyzeSquat(clip));
+      setState(() => _report = analyzeForm(widget.movement, clip));
     } catch (e) {
       if (mounted) setState(() => _error = 'That video could not be read on this device. ($e)');
     } finally {
@@ -91,9 +83,7 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
                 Text(widget.exerciseName, style: Theme.of(context).textTheme.displaySmall),
                 const SizedBox(height: 14),
                 Text(
-                  'Film one set side-on, whole body in frame, phone at hip height. '
-                  'neFaRec finds your hips, knees and ankles in each frame and measures depth, '
-                  'tempo and consistency.',
+                  filmingTip(widget.movement),
                   style: NefaType.style(14.5, 500, height: 1.5, color: c.muted),
                 ),
                 const SizedBox(height: 14),
@@ -146,7 +136,7 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
 
 class _Results extends StatelessWidget {
   const _Results({required this.report});
-  final SquatReport report;
+  final FormReport report;
 
   @override
   Widget build(BuildContext context) {
@@ -163,10 +153,7 @@ class _Results extends StatelessWidget {
               Row(
                 children: [
                   _Stat(value: '${r.reps.length}', label: 'reps'),
-                  _Stat(
-                    value: '${r.reps.where((x) => x.hipBelowKnee).length}/${r.reps.length}',
-                    label: 'to knee level',
-                  ),
+                  _Stat(value: '${r.goodReps}/${r.reps.length}', label: r.goodLabel),
                   _Stat(value: '${(r.confidence * 100).round()}%', label: 'confidence'),
                 ],
               ),
@@ -176,8 +163,9 @@ class _Results extends StatelessWidget {
                 width: double.infinity,
                 child: CustomPaint(
                   painter: _AngleChart(
-                    r.kneeAngles,
+                    r.series,
                     r.reps,
+                    guide: r.guide,
                     line: c.accent,
                     grid: c.boardEdge,
                     text: c.boardMuted,
@@ -187,7 +175,7 @@ class _Results extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Knee angle over the clip (${r.side} side). Shaded bands are reps; lower is deeper.',
+                '${r.seriesLabel} over the clip (${r.side} side). Shaded bands are reps; ${_reading(r.movement)}.',
                 style: NefaType.style(11.5, 500, color: c.boardMuted),
               ),
             ],
@@ -196,7 +184,7 @@ class _Results extends StatelessWidget {
         const SizedBox(height: 20),
         Text('What the clip shows', style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
-        for (final line in squatObservations(r))
+        for (final line in r.observations)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(
@@ -224,10 +212,7 @@ class _Results extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(
-              '${i + 1}.  ${rep.minKneeAngle.round()}° knee · '
-              '${rep.hipBelowKnee ? 'hip at/below knee' : 'above knee'} · '
-              '${rep.descentSeconds.toStringAsFixed(1)} s down / ${rep.ascentSeconds.toStringAsFixed(1)} s up'
-              '${rep.torsoLean == null ? '' : ' · lean ${rep.torsoLean!.round()}°'}',
+              '${i + 1}.  ${rep.line}',
               style: NefaType.style(13, 600, color: c.muted, tabular: true),
             ),
           ),
@@ -235,6 +220,13 @@ class _Results extends StatelessWidget {
     );
   }
 }
+
+String _reading(Movement m) => switch (m) {
+  Movement.deadlift => 'lower is a deeper hinge',
+  Movement.overheadPress => 'higher is closer to lockout',
+  Movement.curl => 'lower is curled further',
+  _ => 'lower is deeper',
+};
 
 class _Stat extends StatelessWidget {
   const _Stat({required this.value, required this.label});
@@ -261,13 +253,15 @@ class _AngleChart extends CustomPainter {
   _AngleChart(
     this.points,
     this.reps, {
+    this.guide,
     required this.line,
     required this.grid,
     required this.text,
     required this.band,
   });
   final List<(double, double)> points;
-  final List<SquatRep> reps;
+  final List<FormRep> reps;
+  final double? guide;
   final Color line, grid, text, band;
 
   @override
@@ -275,7 +269,9 @@ class _AngleChart extends CustomPainter {
     if (points.length < 2) return;
     final t0 = points.first.$1, t1 = points.last.$1;
     double x(double t) => (t - t0) / (t1 - t0 == 0 ? 1 : t1 - t0) * size.width;
-    double y(double a) => (1 - ((a - 40) / 140).clamp(0.0, 1.0)) * size.height;
+    final lowest = points.map((p) => p.$2).reduce(math.min);
+    final floor = math.min(40.0, (lowest - 5).floorToDouble());
+    double y(double a) => (1 - ((a - floor) / (180 - floor)).clamp(0.0, 1.0)) * size.height;
 
     for (final r in reps) {
       canvas.drawRect(Rect.fromLTRB(x(r.start), 0, x(r.end), size.height), Paint()..color = band);
@@ -283,7 +279,7 @@ class _AngleChart extends CustomPainter {
     final g = Paint()
       ..color = grid
       ..strokeWidth = 1;
-    for (final a in [90.0, 135.0, 180.0]) {
+    for (final a in {?guide, 135.0, 180.0}) {
       canvas.drawLine(Offset(0, y(a)), Offset(size.width, y(a)), g);
       final tp = TextPainter(
         text: TextSpan(

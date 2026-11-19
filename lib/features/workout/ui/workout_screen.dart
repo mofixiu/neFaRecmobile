@@ -550,7 +550,7 @@ class _ExercisePage extends ConsumerWidget {
               id: 'form',
               icon: Icons.videocam_outlined,
               title: 'Form check',
-              subtitle: 'Film a set and check your depth',
+              subtitle: 'Film a set and check your form',
             ),
           _OptionRow(
             id: 'demo',
@@ -574,7 +574,7 @@ class _ExercisePage extends ConsumerWidget {
       case 'setup':
         await _editVariant(context, ref, e.id, e.variant);
       case 'form':
-        openFormCheck(context, exerciseName: e.name);
+        openFormCheck(context, exerciseName: e.name, exerciseId: e.exerciseId!);
       case 'demo':
         await ref.read(settingsProvider.notifier).update((s) => s.copyWith(showDemos: !showDemo));
     }

@@ -116,7 +116,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                     label: 'Form check (beta)',
                     icon: Icons.videocam_outlined,
                     tone: ButtonTone.ghost,
-                    onPressed: () => openFormCheck(context, exerciseName: record.name),
+                    onPressed: () => openFormCheck(context, exerciseName: record.name, exerciseId: record.id),
                   ),
                 ],
                 if (trend != null && trend.points.length >= 2) ...[
