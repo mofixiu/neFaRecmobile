@@ -8,7 +8,7 @@ Most people's routine lives in a WhatsApp chat, a note or a screenshot from thei
 
 ### Try it in a minute
 
-1. Install the APK (Android 7+; allow installs from your browser when asked).
+1. Install `neFaRec-1.4.0.apk` (Android 7+; allow installs from your browser when asked). If your phone says it isn't compatible, it runs 32-bit Android: use `neFaRec-1.4.0-older-phones.apk` instead.
 2. Tap **Paste a routine**, then **Try the example**, or paste your own routine from WhatsApp.
 3. Check the review screen, save, and start a workout. Log a few sets and finish to get the receipt.
 
