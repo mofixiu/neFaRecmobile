@@ -90,4 +90,27 @@ void main() {
     t.add(0, const LivePose(width: 1, height: 1, joints: {}));
     expect(t.finish().abstained, isTrue);
   });
+
+  test('walking out of frame after the set keeps the reps', () {
+    final t = LiveFormTracker(Movement.pushUp);
+    _feed(t);
+    expect(t.reps, 3);
+    // Twenty seconds of nobody in view before tapping Finish.
+    for (var i = 0; i < 200; i++) {
+      t.add(10 + i / 10, const LivePose(width: 1000, height: 1000, joints: {}));
+    }
+    expect(t.reps, 3);
+    expect(t.visible, isFalse);
+    expect(t.finish().reps, hasLength(3));
+  });
+
+  test('a blurry frame keeps the last pose on screen briefly', () {
+    final t = LiveFormTracker(Movement.pushUp);
+    t.add(0, _pushUp(100));
+    t.add(.1, _pushUp(100, conf: .1));
+    expect(t.visible, isTrue);
+    expect(t.angle, closeTo(100, 2));
+    t.add(1, _pushUp(100, conf: .1));
+    expect(t.visible, isFalse);
+  });
 }

@@ -40,9 +40,14 @@ class LiveFormTracker {
   double _width = 1, _height = 1;
   double _lastAnalysed = -1;
   int? _firstVisible;
+  int? _lastVisible;
   FormReport? _report;
   Map<String, Joint> _latest = const {};
-  String? _side;
+  Map<String, Joint> _held = const {};
+  double _heldAt = -1, _now = 0;
+
+  /// How long the last clear pose stays on screen through a blurry frame.
+  static const _grace = .6;
 
   /// Adds one frame at [t] seconds into the set. Returns true when a new rep
   /// was counted with this frame.
@@ -50,24 +55,36 @@ class LiveFormTracker {
     _width = pose.width;
     _height = pose.height;
     _latest = pose.joints;
-    final frame = PoseFrame(t, pose.joints);
-    if (_firstVisible == null && _sideFor(pose.joints) != null) _firstVisible = _frames.length;
-    _frames.add(frame);
+    _now = t;
+    final seen = _sideFor(pose.joints) != null;
+    if (seen) {
+      _firstVisible ??= _frames.length;
+      _lastVisible = _frames.length;
+      _held = pose.joints;
+      _heldAt = t;
+    }
+    _frames.add(PoseFrame(t, pose.joints));
     if (_frames.length > maxFrames) {
       _frames.removeAt(0);
       if (_firstVisible != null && _firstVisible! > 0) _firstVisible = _firstVisible! - 1;
+      if (_lastVisible != null && _lastVisible! > 0) _lastVisible = _lastVisible! - 1;
     }
-    if (_firstVisible == null || t - _lastAnalysed < analyseEvery) return false;
+    if (_firstVisible == null || !seen || t - _lastAnalysed < analyseEvery) return false;
     _lastAnalysed = t;
     final before = reps;
-    _report = analyzeForm(movement, _clip());
+    final r = analyzeForm(movement, _clip());
+    // The count never goes backwards: a later pass with fewer reps (a blurry
+    // stretch, thresholds settling) doesn't replace a better one.
+    if (!r.abstained && r.reps.length >= before) _report = r;
     return reps > before;
   }
 
+  /// Frames from when you were first seen to when you were last seen, so time
+  /// spent out of frame before or after the set doesn't count against it.
   PoseClip _clip() => PoseClip(
     width: _width,
     height: _height,
-    frames: _frames.sublist(_firstVisible ?? 0),
+    frames: _frames.sublist(_firstVisible ?? 0, (_lastVisible ?? _frames.length - 1) + 1),
   );
 
   /// The near side whose angle joints are all visible in [joints], if any.
@@ -85,24 +102,25 @@ class LiveFormTracker {
     return l >= r ? 'left' : 'right';
   }
 
-  /// The person's measured joints are in this frame.
-  bool get visible => (_side = _sideFor(_latest)) != null;
+  /// The person's measured joints are in view (a brief blur doesn't count).
+  bool get visible => _sideFor(_latest) != null || _now - _heldAt <= _grace;
+
+  /// The landmarks to draw: this frame's, or the last clear ones for a moment.
+  Map<String, Joint> get joints => _sideFor(_latest) != null || _now - _heldAt > _grace ? _latest : _held;
 
   /// Which side is being measured right now.
-  String? get side => _side ?? _sideFor(_latest);
-
-  /// Latest landmarks, normalised to the upright frame.
-  Map<String, Joint> get joints => _latest;
+  String? get side => _sideFor(joints);
 
   double get frameWidth => _width;
   double get frameHeight => _height;
 
   /// The movement's angle in the latest frame, degrees.
   double? get angle {
-    final s = _sideFor(_latest);
+    final j = joints;
+    final s = _sideFor(j);
     if (s == null) return null;
     final (a, b, c) = angleJoints[movement]!;
-    Point p(String n) => Point(_latest['$s$n']!.x * _width, _latest['$s$n']!.y * _height);
+    Point p(String n) => Point(j['$s$n']!.x * _width, j['$s$n']!.y * _height);
     return _angle(p(a), p(b), p(c));
   }
 
@@ -135,7 +153,10 @@ class LiveFormTracker {
         'Your body wasn’t clear enough in the camera. Stand side-on with your whole body in frame.',
       );
     }
-    return analyzeForm(movement, _clip());
+    final r = analyzeForm(movement, _clip());
+    final live = _report;
+    if (live != null && (r.abstained || r.reps.length < live.reps.length)) return live;
+    return r;
   }
 }
 
