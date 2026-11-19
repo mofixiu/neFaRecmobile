@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 /// On-device text and body-pose recognition. Nothing leaves the phone.
-/// Text uses Apple Vision on iOS and ML Kit on Android; body pose is iOS only.
+/// Apple Vision on iOS, ML Kit on Android.
 class VisionService {
   const VisionService();
 
@@ -13,7 +13,7 @@ class VisionService {
   bool get readsText => Platform.isIOS || Platform.isAndroid;
 
   /// Body pose for the squat form check.
-  bool get readsPose => Platform.isIOS;
+  bool get readsPose => Platform.isIOS || Platform.isAndroid;
 
   /// Text in a photo or screenshot, line by line, top to bottom.
   Future<String> textFromImage(String path) async {

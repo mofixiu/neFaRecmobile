@@ -48,6 +48,8 @@ flutter {
 dependencies {
     // On-device text recognition with the model bundled in the APK (no download, works offline).
     implementation("com.google.mlkit:text-recognition:16.0.1")
+    // On-device body pose for the squat form check (bundled model).
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
     implementation("androidx.exifinterface:exifinterface:1.4.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

@@ -28,7 +28,7 @@ No account, no internet needed. Everything stays on the phone.
 - **Train it.** Each set shows what you did last time. Rest is a scoreboard that counts into overtime, holds like planks get their own timer, and the rest timer carries on in the Dynamic Island and on the lock screen as a Live Activity.
 - **See your history.** Each session ends as a receipt. History has weekly volume, a muscle split, trend charts for each lift and a training calendar.
 - **Look up any move.** 884 exercises with steps and photos, 42 looping demo videos, and swaps for the equipment you have.
-- **Check your squat.** An on-device form check reads a side-view clip with Vision body-pose detection and reports depth, knee angle and torso lean, and says when the clip isn't clear enough to judge.
+- **Check your squat.** Film one set from the side and the form check finds your hips, knees and ankles in every frame (Apple Vision on iPhone, ML Kit pose detection on Android). It reports reps, depth, knee angle, tempo and torso lean, and says when the clip isn't clear enough to judge. Squat variations only for now.
 - **Works offline.** Everything is stored on the phone. An optional account backs your data up to the [neFaRec API](https://github.com/mofixiu/neFaRecbackend).
 
 The parser is also published on its own as [workout_parser](https://pub.dev/packages/workout_parser), and you can [try it in your browser](https://workoutparse.mofiyinebo.com).
@@ -37,11 +37,11 @@ The parser is also published on its own as [workout_parser](https://pub.dev/pack
 
 | Area | Choice |
 | --- | --- |
-| App | Flutter and Dart, on iPhone and Android (the squat form check and Live Activity are iPhone-only) |
+| App | Flutter and Dart, on iPhone and Android (the Live Activity is iPhone-only) |
 | State | Riverpod |
 | Storage | Drift (SQLite), with secure storage for the account token |
 | Native iOS | SwiftUI and ActivityKit for the Live Activity; Vision and PDFKit for text recognition and body pose |
-| Native Android | ML Kit text recognition (bundled model) and PdfRenderer, in Kotlin behind the same channel |
+| Native Android | ML Kit text recognition and pose detection (bundled models), PdfRenderer and MediaCodec, in Kotlin behind the same channel |
 | Look | [paper_kit](https://pub.dev/packages/paper_kit), my handmade-paper UI kit |
 | Backend | [neFaRec API](https://github.com/mofixiu/neFaRecbackend): Node, TypeScript and PostgreSQL, only for accounts and backups |
 
