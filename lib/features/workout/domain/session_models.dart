@@ -26,6 +26,13 @@ extension SetLogX on SetLog {
     return toKg(w, unit) * r;
   }
 
+  /// Lifted weight in kilograms, for completed loaded sets.
+  double? get weightKg {
+    final w = weight;
+    if (!isDone || w == null || w <= 0) return null;
+    return toKg(w, unit);
+  }
+
   double? get e1rmKg {
     final w = weight;
     final r = reps;

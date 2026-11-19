@@ -146,11 +146,16 @@ class _LiftCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.nefa;
     final trend = trendFor(sets, id);
-    final kg = trend?.metric.contains('1RM') ?? false;
+    final kg = trend?.kg ?? false;
+    final estimate = trend?.estimate ?? false;
     final values = [
       for (final p in trend?.points ?? const <TrendPoint>[]) kg ? fromKg(p.value, unit) : p.value,
     ];
-    final metric = kg ? 'Estimated 1RM (${unit.name})' : trend?.metric ?? '';
+    final metric = !kg
+        ? trend?.metric ?? ''
+        : estimate
+        ? 'Estimated 1RM (${unit.name})'
+        : 'Heaviest set (${unit.name})';
     return SheetCard(
       onTap: id.startsWith('custom_') ? null : () => openExercise(context, id),
       child: Column(
@@ -170,7 +175,9 @@ class _LiftCard extends StatelessWidget {
           const SizedBox(height: 10),
           if (values.length < 2)
             Text(
-              'One session so far. The trend appears after your next one.',
+              values.length == 1 && sessions == 1
+                  ? 'One session so far. The trend appears after your next one.'
+                  : 'Log a weight, reps or time on this lift to see a trend.',
               style: NefaType.style(13, 500, color: c.muted),
             )
           else
@@ -180,7 +187,7 @@ class _LiftCard extends StatelessWidget {
               readout: (i) {
                 final p = trend!.points[i];
                 return '${p.date.day} ${_monthShort[p.date.month - 1]} · ${values[i].toStringAsFixed(kg ? 1 : 0)}'
-                    '${kg ? ' ${unit.name} (estimate)' : ''}';
+                    '${kg ? ' ${unit.name}${estimate ? ' (estimate)' : ''}' : ''}';
               },
             ),
         ],

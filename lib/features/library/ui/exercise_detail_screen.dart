@@ -38,14 +38,16 @@ class ExerciseDetailScreen extends ConsumerWidget {
     final sessions = history.map((h) => h.$1).toSet().length;
     final logged = ref.watch(loggedSetsProvider).valueOrNull ?? const [];
     final trend = trendFor(logged, exerciseId);
-    final trendKg = trend?.metric.contains('1RM') ?? false;
+    final trendKg = trend?.kg ?? false;
     final trendValues = [
       for (final p in trend?.points ?? const <TrendPoint>[])
         trendKg ? fromKg(p.value, unit) : p.value,
     ];
-    final trendLabel = trendKg
+    final trendLabel = !trendKg
+        ? trend?.metric ?? ''
+        : trend!.estimate
         ? 'Best estimated 1RM per session (${unit.name}). An estimate, not a tested max.'
-        : trend?.metric ?? '';
+        : 'Heaviest set per session (${unit.name}).';
 
     return PaperScaffold(
       body: Column(

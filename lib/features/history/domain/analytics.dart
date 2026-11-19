@@ -70,11 +70,23 @@ class TrendPoint {
 }
 
 /// Best value per session for one exercise: estimated 1RM for loaded sets,
-/// longest hold for timed ones, most reps for bodyweight.
+/// heaviest set when the reps are too high for an estimate, longest hold for
+/// timed ones, most reps for bodyweight.
 class ExerciseTrend {
-  const ExerciseTrend({required this.metric, required this.points});
+  const ExerciseTrend({
+    required this.metric,
+    required this.points,
+    this.kg = false,
+    this.estimate = false,
+  });
   final String metric;
   final List<TrendPoint> points;
+
+  /// Values are kilograms (convert for display).
+  final bool kg;
+
+  /// Values are Epley estimates, not lifted weights.
+  final bool estimate;
 }
 
 ExerciseTrend? trendFor(List<LoggedSet> sets, String exerciseId) {
@@ -86,10 +98,21 @@ ExerciseTrend? trendFor(List<LoggedSet> sets, String exerciseId) {
   }
   final timed = mine.first.exercise.timed;
   final loaded = mine.any((s) => (s.set.weight ?? 0) > 0);
+  // Epley only covers 1–12 reps. If any loaded session has no set in that
+  // range (15-rep raises, say), chart the heaviest set instead so every
+  // session still gets a point.
+  final estimate =
+      !timed &&
+      loaded &&
+      bySession.values.every(
+        (g) => !g.any((s) => (s.set.weight ?? 0) > 0) || g.any((s) => s.set.e1rmKg != null),
+      );
   final metric = timed
       ? 'Longest hold (s)'
-      : loaded
+      : estimate
       ? 'Estimated 1RM (kg)'
+      : loaded
+      ? 'Heaviest set (kg)'
       : 'Most reps';
   final points = <TrendPoint>[];
   for (final group in bySession.values) {
@@ -97,8 +120,10 @@ ExerciseTrend? trendFor(List<LoggedSet> sets, String exerciseId) {
     for (final s in group) {
       final v = timed
           ? (s.set.durationSeconds ?? 0).toDouble()
-          : loaded
+          : estimate
           ? (s.set.e1rmKg ?? 0)
+          : loaded
+          ? (s.set.weightKg ?? 0)
           : (s.set.reps ?? 0).toDouble();
       if (v > best) best = v;
     }
@@ -107,7 +132,12 @@ ExerciseTrend? trendFor(List<LoggedSet> sets, String exerciseId) {
     }
   }
   points.sort((a, b) => a.date.compareTo(b.date));
-  return ExerciseTrend(metric: metric, points: points);
+  return ExerciseTrend(
+    metric: metric,
+    points: points,
+    kg: !timed && loaded,
+    estimate: estimate,
+  );
 }
 
 /// Exercises you have logged most often, with their names.

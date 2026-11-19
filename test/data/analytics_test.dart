@@ -63,4 +63,16 @@ void main() {
     expect(t.points, hasLength(2));
     expect(t.points.last.value, greaterThan(t.points.first.value));
   });
+
+  test('high-rep sets chart the heaviest set instead of an estimate', () {
+    final t = trendFor([
+      _s(1, DateTime(2026, 10, 1), w: 8, reps: 15),
+      _s(2, DateTime(2026, 10, 8), w: 9, reps: 15),
+      _s(3, DateTime(2026, 10, 15), w: 10, reps: 15),
+    ], 'Barbell_Squat')!;
+    expect(t.estimate, isFalse);
+    expect(t.kg, isTrue);
+    expect(t.metric, 'Heaviest set (kg)');
+    expect(t.points.map((p) => p.value), [8, 9, 10]);
+  });
 }
