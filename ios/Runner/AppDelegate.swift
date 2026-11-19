@@ -36,6 +36,20 @@ final class NefaVision {
     let channel = FlutterMethodChannel(name: "nefarec/vision", binaryMessenger: messenger)
     channel.setMethodCallHandler { call, result in
       let args = call.arguments as? [String: Any] ?? [:]
+      if call.method == "poseFrame" {
+        // Live camera frames: one at a time on their own queue.
+        liveQueue.async {
+          do {
+            let value = try poseFrame(args)
+            DispatchQueue.main.async { result(value) }
+          } catch {
+            DispatchQueue.main.async {
+              result(FlutterError(code: "vision", message: error.localizedDescription, details: nil))
+            }
+          }
+        }
+        return
+      }
       guard let path = args["path"] as? String else {
         result(FlutterError(code: "args", message: "Missing file path.", details: nil))
         return
@@ -171,6 +185,44 @@ final class NefaVision {
     return [
       "width": Double(abs(size.width)), "height": Double(abs(size.height)),
       "duration": duration, "frames": frames,
+    ]
+  }
+
+  private static let liveQueue = DispatchQueue(label: "nefarec.vision.live", qos: .userInitiated)
+
+  /// Body landmarks in one BGRA camera frame, normalised to the upright image
+  /// (top-left origin). The camera plugin already rotates and mirrors iOS
+  /// frames to match the preview, so `rotation` is usually 0.
+  static func poseFrame(_ args: [String: Any]) throws -> [String: Any] {
+    guard let bytes = (args["bytes"] as? FlutterStandardTypedData)?.data,
+      let width = args["width"] as? Int, let height = args["height"] as? Int,
+      let bytesPerRow = args["bytesPerRow"] as? Int,
+      let provider = CGDataProvider(data: bytes as CFData),
+      let cg = CGImage(
+        width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: bytesPerRow,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: CGBitmapInfo(
+          rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue),
+        provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+    else { throw Failure("Could not read that camera frame.") }
+    let rotation = args["rotation"] as? Int ?? 0
+    let orientation: CGImagePropertyOrientation =
+      rotation == 90 ? .right : rotation == 180 ? .down : rotation == 270 ? .left : .up
+    let request = VNDetectHumanBodyPoseRequest()
+    try VNImageRequestHandler(cgImage: cg, orientation: orientation, options: [:]).perform([request])
+    var points: [String: [Double]] = [:]
+    if let body = (request.results ?? []).max(by: { spread($0) < spread($1) }) {
+      let found = try body.recognizedPoints(.all)
+      for (name, key) in joints {
+        if let p = found[name], p.confidence > 0 {
+          points[key] = [Double(p.location.x), Double(1 - p.location.y), Double(p.confidence)]
+        }
+      }
+    }
+    let upright = rotation == 90 || rotation == 270
+    return [
+      "width": Double(upright ? height : width), "height": Double(upright ? width : height),
+      "joints": points,
     ]
   }
 

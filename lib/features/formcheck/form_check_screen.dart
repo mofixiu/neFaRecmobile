@@ -9,6 +9,7 @@ import '../../shared/widgets/controls.dart';
 import '../../shared/widgets/surfaces.dart';
 import '../app/navigation.dart';
 import 'form_analysis.dart';
+import 'live_form_check_screen.dart';
 import '../../shared/widgets/motion.dart';
 
 bool formCheckSupported(String? exerciseId) =>
@@ -55,6 +56,20 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
     }
   }
 
+  Future<void> _live() async {
+    final report = await push<FormReport>(
+      context,
+      LiveFormCheckScreen(exerciseName: widget.exerciseName, movement: widget.movement),
+      fullscreen: true,
+    );
+    if (report != null && mounted) {
+      setState(() {
+        _report = report;
+        _error = null;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.nefa;
@@ -93,10 +108,17 @@ class _FormCheckScreenState extends State<FormCheckScreen> {
                       'This is a 2D estimate, not a safety check or a diagnosis.',
                 ),
                 const SizedBox(height: 20),
-                // Stacked full width so neither label is cut off.
+                // Stacked full width so no label is cut off.
+                NefaButton(
+                  label: 'Check live',
+                  icon: Icons.sensors_rounded,
+                  onPressed: _working ? null : _live,
+                ),
+                const SizedBox(height: 10),
                 NefaButton(
                   label: 'Record a set',
                   icon: Icons.videocam_rounded,
+                  tone: ButtonTone.ghost,
                   loading: _working,
                   onPressed: _working ? null : () => _pick(ImageSource.camera),
                 ),

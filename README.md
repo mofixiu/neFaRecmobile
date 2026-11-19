@@ -2,7 +2,7 @@
 
 **A workout app for messy routines. Paste yours in, train it, and check your form.**
 
-Most people's routine lives in a WhatsApp chat, a note or a screenshot from their coach. Workout apps want it typed in again exercise by exercise, and nobody tells you whether your reps are any good. neFaRec takes the routine as it is: paste or screenshot it, check what it read, train it with a set table that remembers last time's numbers, and film a set to check your form.
+Most people's routine lives in a WhatsApp chat, a note or a screenshot from their coach. Workout apps want it typed in again exercise by exercise, and nobody tells you whether your reps are any good. neFaRec takes the routine as it is: paste or screenshot it, check what it read, train it with a set table that remembers last time's numbers, and check your form live with the camera.
 
 **[Download the Android APK](https://github.com/mofixiu/neFaRecmobile/releases/latest)** · [Watch the demo](https://github.com/mofixiu/neFaRecmobile/releases/latest) · [Tap through it in your browser](https://mofiyinebo.com)
 
@@ -30,7 +30,7 @@ No account, no internet needed. Everything stays on the phone.
 - **Train it.** Each set shows what you did last time. Rest is a scoreboard that counts into overtime, holds like planks get their own timer, and the rest timer carries on in the Dynamic Island and on the lock screen as a Live Activity.
 - **See your history.** Each session ends as a receipt. History has weekly volume, a muscle split, trend charts for each lift and a training calendar.
 - **Look up any move.** 884 exercises with steps and photos, 42 looping demo videos, and swaps for the equipment you have.
-- **Check your form.** Film one set from the side and the form check tracks your joints in every frame (Apple Vision on iPhone, ML Kit pose detection on Android). It counts reps and checks what matters for the lift: depth for squats, lunges and push-ups, body line for push-ups, hinge and lockout for deadlifts, lockout and lean for overhead presses, and range and swing for curls. It says when the clip isn't clear enough to judge.
+- **Check your form, live or from a video.** Point the camera at yourself and neFaRec counts and measures each rep as you do it, or film a set and check it after. It tracks your joints in every frame (Apple Vision on iPhone, ML Kit pose detection on Android). It counts reps and checks what matters for the lift: depth for squats, lunges and push-ups, body line for push-ups, hinge and lockout for deadlifts, lockout and lean for overhead presses, and range and swing for curls. It says when the clip isn't clear enough to judge.
 - **Works offline.** Everything is stored on the phone. An optional account backs your data up to the [neFaRec API](https://github.com/mofixiu/neFaRecbackend).
 
 The parser is also published on its own as [workout_parser](https://pub.dev/packages/workout_parser), and you can [try it in your browser](https://workoutparse.mofiyinebo.com).

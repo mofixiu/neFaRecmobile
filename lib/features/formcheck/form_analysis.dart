@@ -329,7 +329,7 @@ FormReport _analyze(PoseClip clip, _Spec spec) {
         if (a[i] < a[bottom]) bottom = i;
         if (a[i] > leave) {
           inRep = false;
-          final openStart = start == 0 && a[0] < enter && spec.startsAtRest;
+          final openStart = start == 0 && spec.startsAtRest;
           if (!openStart && frames[i].t - frames[start].t >= .35) {
             reps.add(spec.rep(frames, raw, start, bottom, i));
           }

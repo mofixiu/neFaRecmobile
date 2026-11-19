@@ -155,7 +155,10 @@ SquatReport analyzeSquat(PoseClip clip) {
       if (depth[i] > depth[bottomIdx]) bottomIdx = i;
       if (depth[i] < up) {
         inRep = false;
-        reps.add(_rep(samples, startIdx, bottomIdx, i));
+        // The descent began before the clip did (the walk back reached the
+        // first frame): it caught the end of a rep, so skip it.
+        final openStart = startIdx == 0;
+        if (!openStart) reps.add(_rep(samples, startIdx, bottomIdx, i));
       }
     }
   }

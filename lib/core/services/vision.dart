@@ -28,6 +28,25 @@ class VisionService {
     return text ?? '';
   }
 
+  /// Body landmarks in one live camera frame (BGRA on iOS, NV21 on Android),
+  /// normalised to the upright frame. [rotation] turns the raw frame upright.
+  Future<LivePose> poseFromFrame({
+    required Uint8List bytes,
+    required int width,
+    required int height,
+    required int bytesPerRow,
+    int rotation = 0,
+  }) async {
+    final raw = await _channel.invokeMapMethod<String, Object?>('poseFrame', {
+      'bytes': bytes,
+      'width': width,
+      'height': height,
+      'bytesPerRow': bytesPerRow,
+      'rotation': rotation,
+    });
+    return LivePose.fromMap(raw ?? const {});
+  }
+
   /// Body landmarks sampled from a video at [fps].
   Future<PoseClip> poseFromVideo(String path, {double fps = 10}) async {
     final raw = await _channel.invokeMapMethod<String, Object?>('bodyPose', {
@@ -79,4 +98,26 @@ class PoseClip {
   final double width;
   final double height;
   final List<PoseFrame> frames;
+}
+
+/// One live frame's landmarks and the upright frame size they are relative to.
+class LivePose {
+  const LivePose({required this.width, required this.height, required this.joints});
+
+  factory LivePose.fromMap(Map<String, Object?> m) {
+    final joints = <String, Joint>{};
+    (m['joints'] as Map? ?? const {}).forEach((k, v) {
+      final p = (v as List).cast<num>();
+      joints[k as String] = Joint(p[0].toDouble(), p[1].toDouble(), p[2].toDouble());
+    });
+    return LivePose(
+      width: (m['width'] as num?)?.toDouble() ?? 1,
+      height: (m['height'] as num?)?.toDouble() ?? 1,
+      joints: joints,
+    );
+  }
+
+  final double width;
+  final double height;
+  final Map<String, Joint> joints;
 }

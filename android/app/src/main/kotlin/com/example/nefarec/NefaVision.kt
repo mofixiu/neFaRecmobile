@@ -45,8 +45,37 @@ object NefaVision {
     private val main = Handler(Looper.getMainLooper())
     private val recognizer by lazy { TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS) }
 
+    private val liveWorker = Executors.newSingleThreadExecutor()
+
+    // One detector for the whole live session; STREAM_MODE tracks the person between frames.
+    private val liveDetector by lazy {
+        PoseDetection.getClient(
+            AccuratePoseDetectorOptions.Builder().setDetectorMode(AccuratePoseDetectorOptions.STREAM_MODE).build(),
+        )
+    }
+
     fun register(messenger: BinaryMessenger) {
         MethodChannel(messenger, "nefarec/vision").setMethodCallHandler { call, result ->
+            if (call.method == "poseFrame") {
+                val bytes = call.argument<ByteArray>("bytes")
+                val width = call.argument<Int>("width") ?: 0
+                val height = call.argument<Int>("height") ?: 0
+                val rotation = call.argument<Int>("rotation") ?: 0
+                if (bytes == null || width <= 0 || height <= 0) {
+                    result.error("args", "Missing camera frame.", null)
+                    return@setMethodCallHandler
+                }
+                liveWorker.execute {
+                    try {
+                        val value = poseFrame(bytes, width, height, rotation)
+                        main.post { result.success(value) }
+                    } catch (e: Exception) {
+                        Log.e("NefaVision", "poseFrame failed", e)
+                        main.post { result.error("vision", e.message ?: "Could not read that frame.", null) }
+                    }
+                }
+                return@setMethodCallHandler
+            }
             val path = call.argument<String>("path")
             if (path == null) {
                 result.error("args", "Missing file path.", null)
@@ -232,6 +261,19 @@ object NefaVision {
             "width" to width.toDouble(), "height" to height.toDouble(),
             "duration" to durationMs / 1000.0, "frames" to frames,
         )
+    }
+
+    /**
+     * Body landmarks in one NV21 camera frame, normalised to the upright image
+     * (after [rotation]), top-left origin. Not mirrored: the caller flips x
+     * for a mirrored front-camera preview.
+     */
+    private fun poseFrame(nv21: ByteArray, width: Int, height: Int, rotation: Int): Map<String, Any> {
+        val pose = detect(liveDetector, nv21, width, height, rotation)
+        val upright = rotation == 90 || rotation == 270
+        val w = (if (upright) height else width).toDouble()
+        val h = (if (upright) width else height).toDouble()
+        return mapOf("width" to w, "height" to h, "joints" to joints(pose, w, h))
     }
 
     private var useBitmap = false
