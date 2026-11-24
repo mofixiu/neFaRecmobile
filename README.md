@@ -8,10 +8,10 @@ Most people's routine lives in a WhatsApp chat, a note or a screenshot from thei
 
 ### Try it in a minute
 
-1. Install `neFaRec-1.5.0.apk` (Android 7+; allow installs from your browser when asked). If your phone says it isn't compatible, it runs 32-bit Android: use `neFaRec-1.5.0-older-phones.apk` instead.
+1. Install `neFaRec-1.6.0.apk` (Android 7+; allow installs from your browser when asked). If your phone says it isn't compatible, it runs 32-bit Android: use `neFaRec-1.6.0-older-phones.apk` instead.
 2. Tap **Paste a routine**, then **Try the example**, or paste your own routine from WhatsApp.
 3. Check the review screen, save, and start a workout. Log a few sets and finish to get the receipt.
-4. New to the gym? In **Library**, tap **What’s this machine?** and photograph any machine.
+4. New to the gym? In **Routines**, tap **New to the gym?** for a starter plan, or in **Library** tap **What’s this machine?** and photograph any machine.
 
 No account, no internet needed. Everything stays on the phone.
 
@@ -33,6 +33,8 @@ No account, no internet needed. Everything stays on the phone.
 - **Look up any move.** 884 exercises with steps and photos, 42 looping demo videos, and swaps for the equipment you have.
 - **Check your form, live or from a video.** Point the camera at yourself and neFaRec counts and measures each rep as you do it, or film a set and check it after. It tracks your joints in every frame (Apple Vision on iPhone, ML Kit pose detection on Android). It counts reps and checks what matters for the lift: depth for squats, lunges and push-ups, body line for push-ups, hinge and lockout for deadlifts, lockout and lean for overhead presses, and range and swing for curls. It says when the clip isn't clear enough to judge.
 - **Find out what a machine is.** New to the gym? Take a photo of any machine and neFaRec names it, then shows how to set it up, a beginner tip, the mistake to avoid and what to do on it, linked to the library. It reads the name printed on the machine when there is one, and otherwise shows its best guesses for you to pick from. It knows 27 kinds of equipment, from the leg press to the stair climber. The model runs on the phone (Core ML on iPhone, TensorFlow Lite on Android); see [Equipment model](#equipment-model).
+- **Start from nothing.** No routine? Answer three questions (days a week, what your gym has, whether you've lifted before) and neFaRec builds a full-body or upper/lower starter plan from the library, which you check before saving. A first-visit guide covers what to bring, gym manners and what to say when you want a machine.
+- **Get the weight right.** After each set, tap how it felt (easy, good, hard, too heavy) and neFaRec sets the weight for the rest of your sets, and for next time. A plate calculator shows what to load on each side of the bar, and "Machine taken?" swaps in an exercise for the same muscles on equipment that's free.
 - **Works offline.** Everything is stored on the phone. An optional account backs your data up to the [neFaRec API](https://github.com/mofixiu/neFaRecbackend).
 
 ## Equipment model

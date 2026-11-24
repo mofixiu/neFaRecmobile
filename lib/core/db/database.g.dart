@@ -3893,6 +3893,14 @@ class $SetLogsTable extends SetLogs with TableInfo<$SetLogsTable, SetLog> {
     requiredDuringInsert: false,
   );
   @override
+  late final GeneratedColumnWithTypeConverter<Effort?, int> effort = GeneratedColumn<int>(
+    'effort',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  ).withConverter<Effort?>($SetLogsTable.$convertereffortn);
+  @override
   List<GeneratedColumn> get $columns => [
     id,
     sessionExerciseId,
@@ -3907,6 +3915,7 @@ class $SetLogsTable extends SetLogs with TableInfo<$SetLogsTable, SetLog> {
     weight,
     durationSeconds,
     completedAt,
+    effort,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4037,6 +4046,9 @@ class $SetLogsTable extends SetLogs with TableInfo<$SetLogsTable, SetLog> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}completed_at'],
       ),
+      effort: $SetLogsTable.$convertereffortn.fromSql(
+        attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}effort']),
+      ),
     );
   }
 
@@ -4049,6 +4061,12 @@ class $SetLogsTable extends SetLogs with TableInfo<$SetLogsTable, SetLog> {
       const EnumIndexConverter<TargetKind>(TargetKind.values);
   static JsonTypeConverter2<WeightUnit, int, int> $converterunit =
       const EnumIndexConverter<WeightUnit>(WeightUnit.values);
+  static JsonTypeConverter2<Effort, int, int> $convertereffort = const EnumIndexConverter<Effort>(
+    Effort.values,
+  );
+  static JsonTypeConverter2<Effort?, int?, int?> $convertereffortn = JsonTypeConverter2.asNullable(
+    $convertereffort,
+  );
 }
 
 class SetLog extends DataClass implements Insertable<SetLog> {
@@ -4065,6 +4083,9 @@ class SetLog extends DataClass implements Insertable<SetLog> {
   final double? weight;
   final int? durationSeconds;
   final DateTime? completedAt;
+
+  /// How hard the set felt, when you said.
+  final Effort? effort;
   const SetLog({
     required this.id,
     required this.sessionExerciseId,
@@ -4079,6 +4100,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
     this.weight,
     this.durationSeconds,
     this.completedAt,
+    this.effort,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4116,6 +4138,9 @@ class SetLog extends DataClass implements Insertable<SetLog> {
     if (!nullToAbsent || completedAt != null) {
       map['completed_at'] = Variable<DateTime>(completedAt);
     }
+    if (!nullToAbsent || effort != null) {
+      map['effort'] = Variable<int>($SetLogsTable.$convertereffortn.toSql(effort));
+    }
     return map;
   }
 
@@ -4144,6 +4169,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
           ? const Value.absent()
           : Value(durationSeconds),
       completedAt: completedAt == null && nullToAbsent ? const Value.absent() : Value(completedAt),
+      effort: effort == null && nullToAbsent ? const Value.absent() : Value(effort),
     );
   }
 
@@ -4163,6 +4189,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
       weight: serializer.fromJson<double?>(json['weight']),
       durationSeconds: serializer.fromJson<int?>(json['durationSeconds']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+      effort: $SetLogsTable.$convertereffortn.fromJson(serializer.fromJson<int?>(json['effort'])),
     );
   }
   @override
@@ -4182,6 +4209,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
       'weight': serializer.toJson<double?>(weight),
       'durationSeconds': serializer.toJson<int?>(durationSeconds),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
+      'effort': serializer.toJson<int?>($SetLogsTable.$convertereffortn.toJson(effort)),
     };
   }
 
@@ -4199,6 +4227,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
     Value<double?> weight = const Value.absent(),
     Value<int?> durationSeconds = const Value.absent(),
     Value<DateTime?> completedAt = const Value.absent(),
+    Value<Effort?> effort = const Value.absent(),
   }) => SetLog(
     id: id ?? this.id,
     sessionExerciseId: sessionExerciseId ?? this.sessionExerciseId,
@@ -4215,6 +4244,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
     weight: weight.present ? weight.value : this.weight,
     durationSeconds: durationSeconds.present ? durationSeconds.value : this.durationSeconds,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
+    effort: effort.present ? effort.value : this.effort,
   );
   SetLog copyWithCompanion(SetLogsCompanion data) {
     return SetLog(
@@ -4237,6 +4267,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
           ? data.durationSeconds.value
           : this.durationSeconds,
       completedAt: data.completedAt.present ? data.completedAt.value : this.completedAt,
+      effort: data.effort.present ? data.effort.value : this.effort,
     );
   }
 
@@ -4255,7 +4286,8 @@ class SetLog extends DataClass implements Insertable<SetLog> {
           ..write('reps: $reps, ')
           ..write('weight: $weight, ')
           ..write('durationSeconds: $durationSeconds, ')
-          ..write('completedAt: $completedAt')
+          ..write('completedAt: $completedAt, ')
+          ..write('effort: $effort')
           ..write(')'))
         .toString();
   }
@@ -4275,6 +4307,7 @@ class SetLog extends DataClass implements Insertable<SetLog> {
     weight,
     durationSeconds,
     completedAt,
+    effort,
   );
   @override
   bool operator ==(Object other) =>
@@ -4292,7 +4325,8 @@ class SetLog extends DataClass implements Insertable<SetLog> {
           other.reps == this.reps &&
           other.weight == this.weight &&
           other.durationSeconds == this.durationSeconds &&
-          other.completedAt == this.completedAt);
+          other.completedAt == this.completedAt &&
+          other.effort == this.effort);
 }
 
 class SetLogsCompanion extends UpdateCompanion<SetLog> {
@@ -4309,6 +4343,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
   final Value<double?> weight;
   final Value<int?> durationSeconds;
   final Value<DateTime?> completedAt;
+  final Value<Effort?> effort;
   const SetLogsCompanion({
     this.id = const Value.absent(),
     this.sessionExerciseId = const Value.absent(),
@@ -4323,6 +4358,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
     this.weight = const Value.absent(),
     this.durationSeconds = const Value.absent(),
     this.completedAt = const Value.absent(),
+    this.effort = const Value.absent(),
   });
   SetLogsCompanion.insert({
     this.id = const Value.absent(),
@@ -4338,6 +4374,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
     this.weight = const Value.absent(),
     this.durationSeconds = const Value.absent(),
     this.completedAt = const Value.absent(),
+    this.effort = const Value.absent(),
   }) : sessionExerciseId = Value(sessionExerciseId),
        position = Value(position),
        kind = Value(kind);
@@ -4355,6 +4392,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
     Expression<double>? weight,
     Expression<int>? durationSeconds,
     Expression<DateTime>? completedAt,
+    Expression<int>? effort,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4370,6 +4408,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
       if (weight != null) 'weight': weight,
       if (durationSeconds != null) 'duration_seconds': durationSeconds,
       if (completedAt != null) 'completed_at': completedAt,
+      if (effort != null) 'effort': effort,
     });
   }
 
@@ -4387,6 +4426,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
     Value<double?>? weight,
     Value<int?>? durationSeconds,
     Value<DateTime?>? completedAt,
+    Value<Effort?>? effort,
   }) {
     return SetLogsCompanion(
       id: id ?? this.id,
@@ -4402,6 +4442,7 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
       weight: weight ?? this.weight,
       durationSeconds: durationSeconds ?? this.durationSeconds,
       completedAt: completedAt ?? this.completedAt,
+      effort: effort ?? this.effort,
     );
   }
 
@@ -4447,6 +4488,9 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
     if (completedAt.present) {
       map['completed_at'] = Variable<DateTime>(completedAt.value);
     }
+    if (effort.present) {
+      map['effort'] = Variable<int>($SetLogsTable.$convertereffortn.toSql(effort.value));
+    }
     return map;
   }
 
@@ -4465,7 +4509,8 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
           ..write('reps: $reps, ')
           ..write('weight: $weight, ')
           ..write('durationSeconds: $durationSeconds, ')
-          ..write('completedAt: $completedAt')
+          ..write('completedAt: $completedAt, ')
+          ..write('effort: $effort')
           ..write(')'))
         .toString();
   }
@@ -7471,6 +7516,7 @@ typedef $$SetLogsTableCreateCompanionBuilder =
       Value<double?> weight,
       Value<int?> durationSeconds,
       Value<DateTime?> completedAt,
+      Value<Effort?> effort,
     });
 typedef $$SetLogsTableUpdateCompanionBuilder =
     SetLogsCompanion Function({
@@ -7487,6 +7533,7 @@ typedef $$SetLogsTableUpdateCompanionBuilder =
       Value<double?> weight,
       Value<int?> durationSeconds,
       Value<DateTime?> completedAt,
+      Value<Effort?> effort,
     });
 
 final class $$SetLogsTableReferences extends BaseReferences<_$NefaDatabase, $SetLogsTable, SetLog> {
@@ -7560,6 +7607,11 @@ class $$SetLogsTableFilterComposer extends Composer<_$NefaDatabase, $SetLogsTabl
   ColumnFilters<DateTime> get completedAt =>
       $composableBuilder(column: $table.completedAt, builder: (column) => ColumnFilters(column));
 
+  ColumnWithTypeConverterFilters<Effort?, Effort, int> get effort => $composableBuilder(
+    column: $table.effort,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
   $$SessionExercisesTableFilterComposer get sessionExerciseId {
     final $$SessionExercisesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -7631,6 +7683,9 @@ class $$SetLogsTableOrderingComposer extends Composer<_$NefaDatabase, $SetLogsTa
   ColumnOrderings<DateTime> get completedAt =>
       $composableBuilder(column: $table.completedAt, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get effort =>
+      $composableBuilder(column: $table.effort, builder: (column) => ColumnOrderings(column));
+
   $$SessionExercisesTableOrderingComposer get sessionExerciseId {
     final $$SessionExercisesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -7693,6 +7748,9 @@ class $$SetLogsTableAnnotationComposer extends Composer<_$NefaDatabase, $SetLogs
   GeneratedColumn<DateTime> get completedAt =>
       $composableBuilder(column: $table.completedAt, builder: (column) => column);
 
+  GeneratedColumnWithTypeConverter<Effort?, int> get effort =>
+      $composableBuilder(column: $table.effort, builder: (column) => column);
+
   $$SessionExercisesTableAnnotationComposer get sessionExerciseId {
     final $$SessionExercisesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -7751,6 +7809,7 @@ class $$SetLogsTableTableManager
                 Value<double?> weight = const Value.absent(),
                 Value<int?> durationSeconds = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
+                Value<Effort?> effort = const Value.absent(),
               }) => SetLogsCompanion(
                 id: id,
                 sessionExerciseId: sessionExerciseId,
@@ -7765,6 +7824,7 @@ class $$SetLogsTableTableManager
                 weight: weight,
                 durationSeconds: durationSeconds,
                 completedAt: completedAt,
+                effort: effort,
               ),
           createCompanionCallback:
               ({
@@ -7781,6 +7841,7 @@ class $$SetLogsTableTableManager
                 Value<double?> weight = const Value.absent(),
                 Value<int?> durationSeconds = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
+                Value<Effort?> effort = const Value.absent(),
               }) => SetLogsCompanion.insert(
                 id: id,
                 sessionExerciseId: sessionExerciseId,
@@ -7795,6 +7856,7 @@ class $$SetLogsTableTableManager
                 weight: weight,
                 durationSeconds: durationSeconds,
                 completedAt: completedAt,
+                effort: effort,
               ),
           withReferenceMapper: (p0) =>
               p0.map((e) => (e.readTable(table), $$SetLogsTableReferences(db, table, e))).toList(),

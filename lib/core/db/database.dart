@@ -139,6 +139,9 @@ class SetLogs extends Table {
   RealColumn get weight => real().nullable()();
   IntColumn get durationSeconds => integer().nullable()();
   DateTimeColumn get completedAt => dateTime().nullable()();
+
+  /// How hard the set felt, when you said.
+  IntColumn get effort => intEnum<Effort>().nullable()();
 }
 
 /// The single running timer, stored as [WorkoutTimer] JSON.
@@ -178,7 +181,7 @@ class NefaDatabase extends _$NefaDatabase {
   NefaDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'nefarec'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -188,6 +191,9 @@ class NefaDatabase extends _$NefaDatabase {
         await m.addColumn(routineDays, routineDays.weekdays);
         await m.addColumn(routineExercises, routineExercises.variant);
         await m.addColumn(sessionExercises, sessionExercises.variant);
+      }
+      if (from < 3) {
+        await m.addColumn(setLogs, setLogs.effort);
       }
     },
     beforeOpen: (details) async {

@@ -5,26 +5,46 @@ import '../../../core/providers.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../shared/widgets/controls.dart';
 import '../../../shared/widgets/sheet.dart';
+import '../../equipment/equipment_guide.dart';
+import '../../equipment/equipment_screens.dart';
 import '../../settings/settings_controller.dart';
 import '../domain/library_data.dart';
 import '../domain/substitution.dart';
 
-/// "This machine's taken." Pick an alternative that trains the same muscles
-/// with the equipment you have. Returns the chosen record.
-Future<LibraryRecord?> showSwapSheet(BuildContext context, LibraryRecord original) {
+/// Pick an alternative that trains the same muscles with the equipment you
+/// have. With [taken], the station [original] needs is busy, so anything on
+/// the same machine, bar or cable column is left out. Returns the choice.
+Future<LibraryRecord?> showSwapSheet(
+  BuildContext context,
+  LibraryRecord original, {
+  bool taken = false,
+}) {
   return showNefaSheet<LibraryRecord>(
     context,
-    title: 'Swap ${original.name}',
-    subtitle: 'Same muscles, your equipment. Sets and reps stay; loads reset.',
+    title: taken ? takenLabel(original.equipment) : 'Swap ${original.name}',
+    subtitle: taken
+        ? 'Same muscles, somewhere else in the gym. Sets you’ve done stay; loads reset.'
+        : 'Same muscles, your equipment. Sets and reps stay; loads reset.',
     icon: Icons.swap_horiz_rounded,
     expand: true,
-    builder: (_) => _Swap(original: original),
+    builder: (_) => _Swap(original: original, taken: taken),
   );
 }
 
+/// What to call it when [equipment] is busy.
+String takenLabel(String? equipment) => switch (equipment) {
+  'machine' => 'Machine taken?',
+  'barbell' || 'e-z curl bar' => 'Bar taken?',
+  'cable' => 'Cable taken?',
+  'dumbbell' => 'Dumbbells taken?',
+  'kettlebells' => 'Kettlebells taken?',
+  _ => 'Spot taken?',
+};
+
 class _Swap extends ConsumerStatefulWidget {
-  const _Swap({required this.original});
+  const _Swap({required this.original, required this.taken});
   final LibraryRecord original;
+  final bool taken;
 
   @override
   ConsumerState<_Swap> createState() => _SwapState();
@@ -39,9 +59,17 @@ class _SwapState extends ConsumerState<_Swap> {
     final c = context.nefa;
     final data = ref.watch(libraryDataProvider).valueOrNull;
     final have = ref.watch(settingsProvider).equipment;
+    final guide = ref.watch(equipmentGuideProvider).valueOrNull;
     final options = data == null
         ? const <LibraryRecord>[]
-        : alternativesFor(widget.original, data.records, equipment: have);
+        : alternativesFor(
+            widget.original,
+            data.records,
+            equipment: have,
+            exclude: widget.taken && guide != null
+                ? (r) => usesSameStation(widget.original, r, guide)
+                : null,
+          );
     final summary = have.isEmpty
         ? 'Anything'
         : have.length <= 2
@@ -121,6 +149,8 @@ class _SwapState extends ConsumerState<_Swap> {
               ),
               child: Row(
                 children: [
+                  _Thumb(record: r, guide: guide),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,6 +174,44 @@ class _SwapState extends ConsumerState<_Swap> {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// A photo for an option: its own demo photo, or the machine it's done on.
+class _Thumb extends StatelessWidget {
+  const _Thumb({required this.record, required this.guide});
+  final LibraryRecord record;
+  final EquipmentGuide? guide;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.nefa;
+    final demo = bundledDemoAsset(
+      record.id,
+      0,
+      curated: record.curated && record.images.isNotEmpty,
+    );
+    final machine = guide?.forExercise(record.id).firstOrNull;
+    if (demo == null && machine != null) {
+      return EquipmentPhoto(equipment: machine, width: 48, height: 48, radius: NefaRadii.md - 6);
+    }
+    final paper = c.isDark ? const Color(0xFFF1E9DA) : c.sheet;
+    return Container(
+      width: 48,
+      height: 48,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: paper,
+        borderRadius: BorderRadius.circular(NefaRadii.md - 6),
+        border: Border.all(color: c.rule),
+      ),
+      child: demo == null
+          ? Icon(Icons.fitness_center_rounded, size: 20, color: c.faint)
+          : ColorFiltered(
+              colorFilter: ColorFilter.mode(paper, BlendMode.multiply),
+              child: Image.asset(demo, fit: BoxFit.cover, cacheWidth: 144),
+            ),
     );
   }
 }

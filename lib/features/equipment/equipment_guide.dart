@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../library/domain/library_data.dart';
+
 /// One kind of gym equipment from `assets/equipment/equipment.json`.
 class Equipment {
   const Equipment({
@@ -139,7 +141,11 @@ bool _strong(String label) => label.contains(' ') || label.length >= 7;
 
 /// The equipment named by the words on a machine, and the words that did it.
 /// Longer, more specific labels win: "triceps press" beats "triceps".
-(Equipment, String)? equipmentFromText(String text, EquipmentGuide guide, {bool strongOnly = true}) {
+(Equipment, String)? equipmentFromText(
+  String text,
+  EquipmentGuide guide, {
+  bool strongOnly = true,
+}) {
   final hay = _normalise(text);
   if (hay.trim().isEmpty) return null;
   (Equipment, String)? found;
@@ -190,9 +196,36 @@ EquipmentScan rankEquipment(
         final g = guesses.removeAt(i);
         guesses.insert(0, EquipmentGuess(g.equipment, g.confidence, readLabel: weak.$2));
       } else if (i == 0) {
-        guesses[0] = EquipmentGuess(guesses[0].equipment, guesses[0].confidence, readLabel: weak.$2);
+        guesses[0] = EquipmentGuess(
+          guesses[0].equipment,
+          guesses[0].confidence,
+          readLabel: weak.$2,
+        );
       }
     }
   }
   return EquipmentScan(guesses.take(limit).toList());
+}
+
+/// Whether [other] needs the same station as [original], so it's no use when
+/// [original]'s equipment is taken: the same machine (by the guide, or by its
+/// name, e.g. any "leg press"), or the same bar or cable column.
+bool usesSameStation(LibraryRecord original, LibraryRecord other, EquipmentGuide guide) {
+  final kind = original.equipment;
+  if (kind == 'barbell' || kind == 'cable' || kind == 'e-z curl bar') {
+    if (other.equipment == kind) return true;
+  }
+  // A rack of dumbbells or a pile of plates is never all taken.
+  const shared = {'dumbbells', 'plates', 'barbell'};
+  final machines = guide.forExercise(original.id).where((m) => !shared.contains(m.id)).toList();
+  if (machines.isEmpty) return false;
+  final ids = {for (final m in machines) m.id};
+  if (guide.forExercise(other.id).any((m) => ids.contains(m.id))) return true;
+  final name = other.name.toLowerCase();
+  for (final m in machines) {
+    for (final label in [m.name.toLowerCase(), ...m.labels]) {
+      if (label.length >= 5 && name.contains(label)) return true;
+    }
+  }
+  return false;
 }

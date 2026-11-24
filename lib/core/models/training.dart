@@ -9,6 +9,22 @@ enum Provenance { explicit, suggested, defaulted }
 
 enum WeightUnit { kg, lb }
 
+/// How hard a set felt, asked right after it. Stored by index: only add new
+/// values at the end.
+enum Effort {
+  /// Could have done four or more reps.
+  easy,
+
+  /// Two or three left in the tank.
+  good,
+
+  /// One left, or none.
+  hard,
+
+  /// Couldn't finish, or form broke down.
+  tooHeavy,
+}
+
 /// What one prescribed set asks for.
 class SetTarget {
   const SetTarget._({required this.kind, this.repsMin, this.repsMax, this.durationSeconds});

@@ -224,7 +224,13 @@ class _RoutineEditorScreenState extends ConsumerState<RoutineEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Eyebrow(widget.importing ? 'Check what was read' : 'Routine'),
+                        Eyebrow(
+                          widget.importing
+                              ? draft.sourceText == null
+                                    ? 'Check your plan'
+                                    : 'Check what was read'
+                              : 'Routine',
+                        ),
                         TextField(
                           controller: _name,
                           style: Theme.of(context).textTheme.displaySmall,

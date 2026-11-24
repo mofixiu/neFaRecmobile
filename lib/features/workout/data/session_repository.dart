@@ -214,6 +214,28 @@ class SessionRepository {
     });
   }
 
+  /// Records how a set felt.
+  Future<void> setEffort(int setId, Effort? effort) => (db.update(
+    db.setLogs,
+  )..where((s) => s.id.equals(setId))).write(SetLogsCompanion(effort: Value(effort)));
+
+  /// Puts [weight] on the sets not yet done, leaving any you've already
+  /// changed by hand: only those still empty or at [from] move.
+  Future<void> carryWeight(
+    SessionExerciseDetail ex, {
+    required double weight,
+    required double from,
+  }) {
+    return db.transaction(() async {
+      for (final set in ex.sets.where((s) => s.completedAt == null)) {
+        if (set.weight != null && set.weight != from) continue;
+        await (db.update(
+          db.setLogs,
+        )..where((s) => s.id.equals(set.id))).write(SetLogsCompanion(weight: Value(weight)));
+      }
+    });
+  }
+
   Future<void> setVariant(int sessionExerciseId, String? variant) =>
       (db.update(db.sessionExercises)..where((e) => e.id.equals(sessionExerciseId))).write(
         SessionExercisesCompanion(

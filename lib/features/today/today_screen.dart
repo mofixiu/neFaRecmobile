@@ -18,6 +18,7 @@ import '../account/ui/account_screen.dart';
 import '../settings/settings_screen.dart';
 import '../workout/domain/session_models.dart';
 import '../workout/ui/scoreboard.dart';
+import '../plans/starter_plan_screen.dart';
 import '../../shared/widgets/motion.dart';
 
 class TodayScreen extends ConsumerWidget {
@@ -410,6 +411,16 @@ class _FirstRunHero extends StatelessWidget {
             label: 'Paste a routine',
             icon: Icons.content_paste_rounded,
             onPressed: () => openPaste(context),
+          ),
+          const SizedBox(height: 6),
+          Center(
+            child: TextButton(
+              onPressed: () => openStarterPlan(context),
+              child: Text(
+                'No routine yet? Get a starter plan',
+                style: NefaType.style(14, 700, color: c.onBoard),
+              ),
+            ),
           ),
         ],
       ),

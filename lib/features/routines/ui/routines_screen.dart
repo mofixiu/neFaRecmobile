@@ -8,6 +8,7 @@ import '../../../shared/widgets/controls.dart';
 import '../../../shared/widgets/surfaces.dart';
 import '../../app/navigation.dart';
 import '../data/routine_repository.dart';
+import '../../plans/starter_plan_screen.dart';
 import '../../../shared/widgets/motion.dart';
 
 class RoutinesScreen extends ConsumerWidget {
@@ -51,22 +52,31 @@ class RoutinesScreen extends ConsumerWidget {
             ),
             data: (list) => list.isEmpty
                 ? SliverToBoxAdapter(
-                    child: EmptyState(
-                      icon: Icons.view_agenda_outlined,
-                      title: 'No routines yet',
-                      body:
-                          'Paste one from your notes, a chat or an AI answer. You check it before anything is saved.',
-                      action: 'Paste a routine',
-                      onAction: () => openPaste(context),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        EmptyState(
+                          icon: Icons.view_agenda_outlined,
+                          title: 'No routines yet',
+                          body:
+                              'Paste one from your notes, a chat or an AI answer. You check it before anything is saved.',
+                          action: 'Paste a routine',
+                          onAction: () => openPaste(context),
+                        ),
+                        const SizedBox(height: 12),
+                        const _StarterCard(),
+                      ],
                     ),
                   )
                 : SliverList.separated(
-                    itemCount: list.length,
+                    itemCount: list.length + 1,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, i) => Rise(
-                      index: i,
-                      child: _RoutineCard(summary: list[i]),
-                    ),
+                    itemBuilder: (context, i) => i == list.length
+                        ? const _StarterCard()
+                        : Rise(
+                            index: i,
+                            child: _RoutineCard(summary: list[i]),
+                          ),
                   ),
           ),
         ),
@@ -140,4 +150,39 @@ String _ago(DateTime t) {
   if (d.inDays < 7) return '${d.inDays} days ago';
   if (d.inDays < 30) return '${d.inDays ~/ 7} wk ago';
   return '${d.inDays ~/ 30} mo ago';
+}
+
+/// No routine, or want another? Build a beginner plan.
+class _StarterCard extends StatelessWidget {
+  const _StarterCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.nefa;
+    return SheetCard(
+      onTap: () => openStarterPlan(context),
+      semanticLabel: 'New to the gym? Get a starter plan.',
+      color: c.recessed,
+      child: Row(
+        children: [
+          Icon(Icons.auto_awesome_outlined, color: c.accentInk),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('New to the gym?', style: NefaType.style(15.5, 800, color: c.ink)),
+                const SizedBox(height: 2),
+                Text(
+                  'Get a starter plan built from what your gym has.',
+                  style: NefaType.style(13, 500, color: c.muted),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right_rounded, color: c.faint),
+        ],
+      ),
+    );
+  }
 }

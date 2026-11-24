@@ -37,9 +37,9 @@ void main() {
     });
 
     test('covers every label the on-device models can return', () {
-      final labels = File('android/app/src/main/assets/equipment_labels.txt')
-          .readAsLinesSync()
-          .where((l) => l.trim().isNotEmpty);
+      final labels = File(
+        'android/app/src/main/assets/equipment_labels.txt',
+      ).readAsLinesSync().where((l) => l.trim().isNotEmpty);
       expect(labels, hasLength(guide.items.length));
       for (final l in labels) {
         expect(guide.byId(l), isNotNull, reason: l);
@@ -53,9 +53,38 @@ void main() {
     });
   });
 
+  group('machine taken', () {
+    LibraryRecord r(String id) => library.records.firstWhere((x) => x.id == id);
+
+    test('leg press taken rules out every leg press', () {
+      final lp = r('Leg_Press');
+      expect(usesSameStation(lp, r('Narrow_Stance_Leg_Press'), guide), isTrue);
+      expect(usesSameStation(lp, r('Smith_Machine_Leg_Press'), guide), isTrue);
+      expect(usesSameStation(lp, r('Hack_Squat'), guide), isFalse);
+      expect(usesSameStation(lp, r('Goblet_Squat'), guide), isFalse);
+    });
+
+    test('a bar or cable column taken rules out the same kit', () {
+      expect(usesSameStation(r('Barbell_Squat'), r('Front_Barbell_Squat'), guide), isTrue);
+      expect(usesSameStation(r('Barbell_Squat'), r('Leg_Press'), guide), isFalse);
+      expect(usesSameStation(r('Triceps_Pushdown'), r('Cable_Crossover'), guide), isTrue);
+      expect(usesSameStation(r('Triceps_Pushdown'), r('Bench_Dips'), guide), isFalse);
+    });
+
+    test('dumbbells are never all taken', () {
+      expect(
+        usesSameStation(r('Dumbbell_Bench_Press'), r('Dumbbell_Shoulder_Press'), guide),
+        isFalse,
+      );
+    });
+  });
+
   group('reading the machine', () {
     test('a specific label on the machine names it', () {
-      expect(equipmentFromText('HAMMER STRENGTH\nLEG EXTENSION\nAdjust seat', guide)?.$1.id, 'leg_extension');
+      expect(
+        equipmentFromText('HAMMER STRENGTH\nLEG EXTENSION\nAdjust seat', guide)?.$1.id,
+        'leg_extension',
+      );
       expect(equipmentFromText('Lat Pulldown / Low Row', guide)?.$1.id, 'lat_pulldown');
       expect(equipmentFromText('TREADMILL T5', guide)?.$1.id, 'treadmill');
     });
@@ -67,14 +96,21 @@ void main() {
 
     test('short or partial words alone do not name a machine', () {
       expect(equipmentFromText('ROW', guide), isNull);
-      expect(equipmentFromText('Narrow grip', guide, strongOnly: false)?.$1.id, isNot('seated_row'));
+      expect(
+        equipmentFromText('Narrow grip', guide, strongOnly: false)?.$1.id,
+        isNot('seated_row'),
+      );
       expect(equipmentFromText('', guide), isNull);
     });
   });
 
   group('ranking', () {
     test('the model alone, best first', () {
-      final scan = rankEquipment([('leg_press', .82), ('hack_squat', .1), ('leg_curl', .05)], '', guide);
+      final scan = rankEquipment(
+        [('leg_press', .82), ('hack_squat', .1), ('leg_curl', .05)],
+        '',
+        guide,
+      );
       expect(scan.best!.equipment.id, 'leg_press');
       expect(scan.best!.readLabel, isNull);
       expect(scan.confident, isTrue);

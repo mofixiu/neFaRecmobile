@@ -14,6 +14,9 @@ import '../../shared/widgets/surfaces.dart';
 import '../app/navigation.dart';
 import '../library/domain/library_data.dart';
 import 'equipment_guide.dart';
+import '../settings/settings_controller.dart';
+import '../tools/plate_calculator.dart';
+import '../tools/plates.dart';
 
 final equipmentGuideProvider = FutureProvider<EquipmentGuide>(
   (_) async => EquipmentGuide.parse(await rootBundle.loadString('assets/equipment/equipment.json')),
@@ -77,7 +80,9 @@ class _EquipmentScanScreenState extends ConsumerState<EquipmentScanScreen> {
       if (scan.confident) HapticFeedback.lightImpact();
       setState(() => _scan = scan);
     } on PlatformException catch (e) {
-      if (mounted) setState(() => _error = e.message ?? 'That photo couldn’t be read on this device.');
+      if (mounted) {
+        setState(() => _error = e.message ?? 'That photo couldn’t be read on this device.');
+      }
     } catch (e) {
       if (mounted) setState(() => _error = 'That photo couldn’t be read on this device. ($e)');
     } finally {
@@ -224,7 +229,13 @@ class _Result extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         best.equipment.name,
-                        style: NefaType.style(24, 900, tracking: -.6, height: 1.1, color: c.onBoard),
+                        style: NefaType.style(
+                          24,
+                          900,
+                          tracking: -.6,
+                          height: 1.1,
+                          color: c.onBoard,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -430,6 +441,28 @@ class EquipmentDetailScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                if (e.id == 'barbell' ||
+                    e.id == 'plates' ||
+                    plateLoadedMachines.contains(e.id)) ...[
+                  const SizedBox(height: 4),
+                  NefaButton(
+                    label: e.id == 'barbell' || e.id == 'plates'
+                        ? 'What to put on the bar'
+                        : 'Which plates to load',
+                    icon: Icons.fitness_center_rounded,
+                    tone: ButtonTone.ghost,
+                    height: 48,
+                    onPressed: () {
+                      final unit = ref.read(settingsProvider).unit;
+                      showPlateCalculator(
+                        context,
+                        bar: plateLoadedMachines.contains(e.id) ? 0 : barsFor(unit).first,
+                        unit: unit,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                ],
                 const SizedBox(height: 4),
                 _Callout(label: 'Beginner tip', text: e.tip, color: c.accentWash, ink: c.accentInk),
                 const SizedBox(height: 10),
@@ -469,7 +502,11 @@ class EquipmentDetailScreen extends ConsumerWidget {
                             if (videos.containsKey(r.id))
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
-                                child: Icon(Icons.play_circle_fill_rounded, size: 20, color: c.accent),
+                                child: Icon(
+                                  Icons.play_circle_fill_rounded,
+                                  size: 20,
+                                  color: c.accent,
+                                ),
                               ),
                             Icon(Icons.chevron_right_rounded, color: c.faint),
                           ],

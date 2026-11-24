@@ -17,6 +17,10 @@ import '../../formcheck/form_check_screen.dart';
 import '../../library/domain/library_data.dart';
 import '../../library/ui/exercise_demo.dart';
 import '../../library/ui/swap_sheet.dart';
+import '../../equipment/equipment_screens.dart';
+import '../../tools/plate_calculator.dart';
+import '../../tools/plates.dart';
+import '../domain/effort.dart';
 import '../../settings/settings_controller.dart';
 import '../domain/progression.dart';
 import '../domain/session_models.dart';
@@ -455,14 +459,31 @@ class _ExercisePage extends ConsumerWidget {
           ].join('  ·  '),
           style: NefaType.style(14.5, 600, color: c.muted, tabular: true),
         ),
+        if (record != null && !ex.isComplete && !e.skipped) ...[
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Pill(
+              label: takenLabel(record.equipment),
+              icon: Icons.swap_horiz_rounded,
+              background: c.sheet,
+              onTap: () => _swap(context, ref, record, taken: true),
+            ),
+          ),
+        ],
         if (e.notes != null && e.notes!.isNotEmpty) ...[
           const SizedBox(height: 14),
           Notice(text: e.notes!),
         ],
         const SizedBox(height: 22),
-        if (!ex.isComplete && !e.skipped)
+        // Before the first set: what to aim for. After it: how it felt, which
+        // sits above the table so the rest board never covers it.
+        if (!ex.isComplete && !e.skipped && ex.done == 0)
           _SuggestionCard(ex: ex, previous: prev, equipment: record?.equipment),
+        if (!e.timed) _EffortPrompt(ex: ex, equipment: record?.equipment),
         _SetTable(detail: detail, ex: ex, previous: prev),
+        if (_barFor(ref, record) case final bar? when !e.timed)
+          _LoadBarLink(ex: ex, previous: prev, bar: bar),
         const SizedBox(height: 14),
         Row(
           children: [
@@ -506,6 +527,20 @@ class _ExercisePage extends ConsumerWidget {
           ),
       ],
     );
+  }
+
+  Future<void> _swap(
+    BuildContext context,
+    WidgetRef ref,
+    LibraryRecord record, {
+    bool taken = false,
+  }) async {
+    final ex = detail.exercises[index];
+    final swap = await showSwapSheet(context, record, taken: taken);
+    if (swap == null) return;
+    await ref
+        .read(sessionRepositoryProvider)
+        .swapExercise(ex, exerciseId: swap.id, name: swap.name, timed: swap.timed);
   }
 
   /// Everything you might do to an exercise, one tap away instead of a row
@@ -566,11 +601,7 @@ class _ExercisePage extends ConsumerWidget {
       case 'how':
         await showCues(context, record!);
       case 'swap':
-        final swap = await showSwapSheet(context, record!);
-        if (swap == null) return;
-        await ref
-            .read(sessionRepositoryProvider)
-            .swapExercise(ex, exerciseId: swap.id, name: swap.name, timed: swap.timed);
+        await _swap(context, ref, record!);
       case 'setup':
         await _editVariant(context, ref, e.id, e.variant);
       case 'form':
@@ -578,6 +609,172 @@ class _ExercisePage extends ConsumerWidget {
       case 'demo':
         await ref.read(settingsProvider.notifier).update((s) => s.copyWith(showDemos: !showDemo));
     }
+  }
+}
+
+/// "How did that feel?" after each loaded set; the answer sets the weight
+/// for the sets still to do.
+class _EffortPrompt extends ConsumerWidget {
+  const _EffortPrompt({required this.ex, required this.equipment});
+  final SessionExerciseDetail ex;
+  final String? equipment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.nefa;
+    final done = ex.sets.where((s) => s.isDone && (s.weight ?? 0) > 0).toList()
+      ..sort((a, b) => a.completedAt!.compareTo(b.completedAt!));
+    if (done.isEmpty) return const SizedBox();
+    final last = done.last;
+    final more = ex.sets.any((s) => !s.isDone);
+    final effort = last.effort;
+
+    NextWeight? next(Effort e) => nextWeightAfter(
+      effort: e,
+      weight: last.weight!,
+      reps: last.reps,
+      target: last.target,
+      unit: last.unit,
+      equipment: equipment,
+    );
+
+    if (effort != null) {
+      if (!more) return const SizedBox();
+      final n = next(effort);
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.check_circle_outline_rounded, size: 17, color: c.success),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Set ${last.position + 1}: ${effortLabel(effort).toLowerCase()}. ${n?.reason ?? ''}',
+                style: NefaType.style(13.5, 600, height: 1.4, color: c.muted),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Future<void> answer(Effort e) async {
+      HapticFeedback.selectionClick();
+      final repo = ref.read(sessionRepositoryProvider);
+      await repo.setEffort(last.id, e);
+      final n = next(e);
+      if (n != null && n.weight != last.weight) {
+        await repo.carryWeight(ex, weight: n.weight, from: last.weight!);
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+        decoration: BoxDecoration(
+          color: c.accentWash,
+          borderRadius: BorderRadius.circular(NefaRadii.lg - 4),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'How did set ${last.position + 1} feel?',
+              style: NefaType.style(15.5, 800, color: c.ink),
+            ),
+            const SizedBox(height: 8),
+            for (final row in [
+              [Effort.easy, Effort.good],
+              [Effort.hard, Effort.tooHeavy],
+            ]) ...[
+              Row(
+                children: [
+                  for (final (i, e) in row.indexed) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Expanded(
+                      child: Pressable(
+                        onTap: () => answer(e),
+                        semanticLabel: '${effortLabel(e)}: ${effortHint(e)}',
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: c.raised,
+                            borderRadius: BorderRadius.circular(NefaRadii.md - 4),
+                            border: Border.all(color: c.rule),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(effortLabel(e), style: NefaType.style(14.5, 800, color: c.ink)),
+                              Text(effortHint(e), style: NefaType.style(12, 500, color: c.muted)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              if (row.first == Effort.easy) const SizedBox(height: 8),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Which bar to load for [record], or null when plates don't apply.
+double? _barFor(WidgetRef ref, LibraryRecord? record) {
+  if (record == null) return null;
+  final unit = ref.watch(settingsProvider.select((s) => s.unit));
+  final machines =
+      ref.watch(equipmentGuideProvider).valueOrNull?.forExercise(record.id) ?? const [];
+  final plateLoaded = machines.any((m) => plateLoadedMachines.contains(m.id));
+  return defaultBar(record.equipment, unit, plateLoaded: plateLoaded);
+}
+
+/// "Load the bar" for the next set's weight.
+class _LoadBarLink extends StatelessWidget {
+  const _LoadBarLink({required this.ex, required this.previous, required this.bar});
+  final SessionExerciseDetail ex;
+  final PreviousPerformance? previous;
+  final double bar;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.nefa;
+    final next = ex.sets.where((s) => !s.isDone).firstOrNull ?? ex.sets.lastOrNull;
+    final weight =
+        next?.weight ?? next?.targetWeight ?? previous?.forPosition(next?.position ?? 0)?.weight;
+    final unit = next?.unit ?? WeightUnit.kg;
+    final label = weight == null || weight <= 0
+        ? (bar == 0 ? 'Which plates to load' : 'Load the bar')
+        : '${bar == 0 ? 'Plates for' : 'Load the bar for'} ${formatWeight(weight, unit)}';
+    return Pressable(
+      onTap: () => showPlateCalculator(
+        context,
+        weight: weight != null && weight > 0 ? weight : null,
+        bar: bar,
+        unit: unit,
+      ),
+      semanticLabel: label,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 12, left: 4),
+        child: Row(
+          children: [
+            Icon(Icons.fitness_center_rounded, size: 17, color: c.accentInk),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(label, style: NefaType.style(14, 800, color: c.accentInk)),
+            ),
+            Icon(Icons.chevron_right_rounded, size: 18, color: c.accentInk),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -1017,7 +1214,52 @@ class _SuggestionCardState extends ConsumerState<_SuggestionCard> {
       plannedSets: ex.sets.length,
       equipment: widget.equipment,
     );
-    if (s == null) return const SizedBox();
+    if (s == null) {
+      // First time on this one: where to start.
+      final kit = widget.equipment;
+      if (widget.previous != null ||
+          ex.done > 0 ||
+          kit == null ||
+          kit == 'body only' ||
+          kit == 'other') {
+        return const SizedBox();
+      }
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
+          decoration: BoxDecoration(
+            color: c.recessed,
+            borderRadius: BorderRadius.circular(NefaRadii.lg - 4),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.flag_outlined, size: 20, color: c.ink),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('First time? Start light', style: NefaType.style(15, 800, color: c.ink)),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${startingWeightTip(kit, ex.sets.first.unit)} After each set, say how it felt and neFaRec sets the next weight.',
+                      style: NefaType.style(12.5, 500, height: 1.35, color: c.muted),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: 'Hide',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(Icons.close_rounded, size: 18, color: c.muted),
+                onPressed: () => setState(() => _hidden = true),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     final unit = ex.sets.first.unit;
     // One slim strip: the number, a short why, and a single tap to use it.
     return Padding(

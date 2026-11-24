@@ -41,6 +41,25 @@ Landmine press 3x8''';
     return routines.save(RoutineDraft.fromParsed(parser.parse(text), text));
   }
 
+  test('effort is stored and the next weight carries to untouched sets', () async {
+    final id = await importSpec();
+    final detail = (await routines.load(id))!;
+    final sid = await sessions.start(detail, detail.days.single, now: DateTime(2026, 11, 1, 18));
+    var ex = (await sessions.load(sid))!.exercises.first;
+    // Set 3 was changed by hand; set 2 still has the planned 20 kg.
+    await sessions.updateSet(ex.sets[2].id, weight: 25);
+    ex = (await sessions.load(sid))!.exercises.first;
+    await sessions.completeSet(ex.sets.first);
+    await sessions.setEffort(ex.sets.first.id, Effort.easy);
+    ex = (await sessions.load(sid))!.exercises.first;
+    await sessions.carryWeight(ex, weight: 22, from: 20);
+    ex = (await sessions.load(sid))!.exercises.first;
+    expect(ex.sets.first.effort, Effort.easy);
+    expect(ex.sets.first.weight, 20);
+    expect(ex.sets[1].weight, 22);
+    expect(ex.sets[2].weight, 25);
+  });
+
   test('saving an import keeps order, targets and creates customs', () async {
     final id = await importSpec();
     final detail = (await routines.load(id))!;

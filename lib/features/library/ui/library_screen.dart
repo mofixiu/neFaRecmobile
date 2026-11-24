@@ -7,6 +7,8 @@ import '../../../shared/widgets/controls.dart';
 import '../../../shared/widgets/surfaces.dart';
 import '../../app/navigation.dart';
 import '../../equipment/equipment_screens.dart';
+import '../../tools/first_visit_screen.dart';
+import '../../tools/plate_calculator.dart';
 import '../domain/library_data.dart';
 import '../../../shared/widgets/motion.dart';
 
@@ -117,9 +119,33 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       ),
                     ),
                   ),
-                  if (equipmentScanSupported && q.isEmpty) ...[
-                    const SizedBox(height: 14),
-                    const _ScanCard(),
+                  if (q.isEmpty) ...[
+                    if (equipmentScanSupported) ...[const SizedBox(height: 14), const _ScanCard()],
+                    const SizedBox(height: 10),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _ToolCard(
+                              icon: Icons.fitness_center_rounded,
+                              title: 'Plate calculator',
+                              subtitle: 'What to put on the bar',
+                              onTap: () => showPlateCalculator(context),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _ToolCard(
+                              icon: Icons.waving_hand_outlined,
+                              title: 'First visit',
+                              subtitle: 'What to know before you go',
+                              onTap: () => openFirstVisit(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                   const SizedBox(height: 12),
                 ],
@@ -182,7 +208,10 @@ class _ScanCard extends StatelessWidget {
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(color: c.accent, borderRadius: BorderRadius.circular(NefaRadii.md - 4)),
+            decoration: BoxDecoration(
+              color: c.accent,
+              borderRadius: BorderRadius.circular(NefaRadii.md - 4),
+            ),
             child: Icon(Icons.center_focus_strong_rounded, color: c.onAccent),
           ),
           const SizedBox(width: 14),
@@ -200,6 +229,39 @@ class _ScanCard extends StatelessWidget {
             ),
           ),
           Icon(Icons.chevron_right_rounded, color: c.faint),
+        ],
+      ),
+    );
+  }
+}
+
+class _ToolCard extends StatelessWidget {
+  const _ToolCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.nefa;
+    return SheetCard(
+      padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+      onTap: onTap,
+      semanticLabel: '$title. $subtitle',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 22, color: c.accentInk),
+          const SizedBox(height: 8),
+          Text(title, style: NefaType.style(14.5, 800, color: c.ink)),
+          const SizedBox(height: 2),
+          Text(subtitle, style: NefaType.style(12, 500, color: c.muted)),
         ],
       ),
     );

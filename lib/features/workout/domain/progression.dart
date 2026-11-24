@@ -93,6 +93,26 @@ Suggestion? suggestNext({
   }
 
   final atTopWeight = prev.where((s) => (s.weight ?? 0) == top).toList();
+  // How the sets felt beats the rep count: too heavy last time means come
+  // down; every set easy means go up, even short of the top of the range.
+  if (atTopWeight.any((s) => s.effort == Effort.tooHeavy)) {
+    final next = (top - loadStep(equipment, unit)).clamp(0, top).toDouble();
+    return Suggestion(
+      weight: next,
+      reps: low,
+      reason:
+          'It felt too heavy at ${formatWeight(top, unit)} last time. '
+          'Start at ${formatWeight(next, unit)}.',
+    );
+  }
+  if (prev.every((s) => s.effort == Effort.easy) && minReps >= low) {
+    final next = top + loadStep(equipment, unit);
+    return Suggestion(
+      weight: next,
+      reps: low,
+      reason: 'Every set felt easy at ${formatWeight(top, unit)} last time. Add load.',
+    );
+  }
   final topRepsOk = atTopWeight.every((s) => (s.reps ?? 0) >= high);
   if (allAtTop || (topRepsOk && atTopWeight.length * 2 >= plannedSets)) {
     final next = top + loadStep(equipment, unit);

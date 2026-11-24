@@ -28,6 +28,7 @@ List<LibraryRecord> alternativesFor(
   Iterable<LibraryRecord> library, {
   Set<String> equipment = const {},
   int limit = 20,
+  bool Function(LibraryRecord)? exclude,
 }) {
   final primary = original.primaryMuscles.toSet();
   if (primary.isEmpty) return const [];
@@ -40,6 +41,7 @@ List<LibraryRecord> alternativesFor(
     }
     if (!r.primaryMuscles.any(primary.contains)) continue;
     if (!_available(r, equipment)) continue;
+    if (exclude?.call(r) ?? false) continue;
     var score = 3.0;
     if (r.primaryMuscles.first == original.primaryMuscles.first) score += 2;
     if (r.force != null && r.force == original.force) score += 1.5;
