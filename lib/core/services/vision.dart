@@ -28,6 +28,16 @@ class VisionService {
     return text ?? '';
   }
 
+  /// What kind of gym equipment a photo shows, as the on-device model's
+  /// best guesses: `(equipment id, confidence 0-1)`, most likely first.
+  Future<List<(String, double)>> equipmentFromImage(String path) async {
+    final raw = await _channel.invokeListMethod<Object?>('equipment', {'path': path});
+    return [
+      for (final item in raw ?? const [])
+        if (item is List && item.length == 2) (item[0] as String, (item[1] as num).toDouble()),
+    ];
+  }
+
   /// Body landmarks in one live camera frame (BGRA on iOS, NV21 on Android),
   /// normalised to the upright frame. [rotation] turns the raw frame upright.
   Future<LivePose> poseFromFrame({

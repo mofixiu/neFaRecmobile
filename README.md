@@ -8,9 +8,10 @@ Most people's routine lives in a WhatsApp chat, a note or a screenshot from thei
 
 ### Try it in a minute
 
-1. Install `neFaRec-1.4.0.apk` (Android 7+; allow installs from your browser when asked). If your phone says it isn't compatible, it runs 32-bit Android: use `neFaRec-1.4.0-older-phones.apk` instead.
+1. Install `neFaRec-1.5.0.apk` (Android 7+; allow installs from your browser when asked). If your phone says it isn't compatible, it runs 32-bit Android: use `neFaRec-1.5.0-older-phones.apk` instead.
 2. Tap **Paste a routine**, then **Try the example**, or paste your own routine from WhatsApp.
 3. Check the review screen, save, and start a workout. Log a few sets and finish to get the receipt.
+4. New to the gym? In **Library**, tap **What’s this machine?** and photograph any machine.
 
 No account, no internet needed. Everything stays on the phone.
 
@@ -31,7 +32,12 @@ No account, no internet needed. Everything stays on the phone.
 - **See your history.** Each session ends as a receipt. History has weekly volume, a muscle split, trend charts for each lift and a training calendar.
 - **Look up any move.** 884 exercises with steps and photos, 42 looping demo videos, and swaps for the equipment you have.
 - **Check your form, live or from a video.** Point the camera at yourself and neFaRec counts and measures each rep as you do it, or film a set and check it after. It tracks your joints in every frame (Apple Vision on iPhone, ML Kit pose detection on Android). It counts reps and checks what matters for the lift: depth for squats, lunges and push-ups, body line for push-ups, hinge and lockout for deadlifts, lockout and lean for overhead presses, and range and swing for curls. It says when the clip isn't clear enough to judge.
+- **Find out what a machine is.** New to the gym? Take a photo of any machine and neFaRec names it, then shows how to set it up, a beginner tip, the mistake to avoid and what to do on it, linked to the library. It reads the name printed on the machine when there is one, and otherwise shows its best guesses for you to pick from. It knows 27 kinds of equipment, from the leg press to the stair climber. The model runs on the phone (Core ML on iPhone, TensorFlow Lite on Android); see [Equipment model](#equipment-model).
 - **Works offline.** Everything is stored on the phone. An optional account backs your data up to the [neFaRec API](https://github.com/mofixiu/neFaRecbackend).
+
+## Equipment model
+
+The scanner is a MobileNetV3 image classifier, fine-tuned on about 2,400 photos of 27 kinds of gym equipment from the [Gym machines image dataset](https://huggingface.co/datasets/suc1dalspinach/Gym_machines_Image_dataset) on Hugging Face, after removing near-duplicates. The same model ships as TensorFlow Lite on Android and Core ML on iPhone (6 MB each). On a held-out set of 290 photos it names the right equipment first 65% of the time, and has it in its top three 85% of the time. The treadmill, bike, barbell, leg press, dip machines and preacher bench are reliable; lookalike seated machines (shoulder press, chest press, pec deck, seated row, leg curl against leg extension) get confused, which is why the app shows its runners-up and trusts a name printed on the machine over its own guess. The photos in the equipment guide are from free-exercise-db (public domain). The training photos are not in this repo or the app.
 
 The parser is also published on its own as [workout_parser](https://pub.dev/packages/workout_parser), and you can [try it in your browser](https://workoutparse.mofiyinebo.com).
 

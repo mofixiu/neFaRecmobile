@@ -1,5 +1,6 @@
 package com.example.nefarec
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -30,6 +31,11 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.io.FileInputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.channels.FileChannel
+import org.tensorflow.lite.Interpreter
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -54,7 +60,21 @@ object NefaVision {
         )
     }
 
-    fun register(messenger: BinaryMessenger) {
+    private lateinit var appContext: Context
+
+    // neFaRec's equipment classifier (MobileNetV3, float16), shipped in the APK's assets.
+    private val equipmentModel by lazy {
+        val fd = appContext.assets.openFd("equipment.tflite")
+        val buffer = FileInputStream(fd.fileDescriptor).channel
+            .map(FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength)
+        Interpreter(buffer, Interpreter.Options().setNumThreads(2))
+    }
+    private val equipmentLabels by lazy {
+        appContext.assets.open("equipment_labels.txt").bufferedReader().readLines().filter { it.isNotBlank() }
+    }
+
+    fun register(messenger: BinaryMessenger, context: Context) {
+        appContext = context.applicationContext
         MethodChannel(messenger, "nefarec/vision").setMethodCallHandler { call, result ->
             if (call.method == "poseFrame") {
                 val bytes = call.argument<ByteArray>("bytes")
@@ -81,7 +101,7 @@ object NefaVision {
                 result.error("args", "Missing file path.", null)
                 return@setMethodCallHandler
             }
-            if (call.method !in setOf("recognizeText", "pdfText", "bodyPose")) {
+            if (call.method !in setOf("recognizeText", "pdfText", "bodyPose", "equipment")) {
                 result.notImplemented()
                 return@setMethodCallHandler
             }
@@ -90,6 +110,7 @@ object NefaVision {
                     val value: Any = when (call.method) {
                         "pdfText" -> pdfText(path)
                         "bodyPose" -> bodyPose(path, call.argument<Double>("fps") ?: 10.0)
+                        "equipment" -> equipment(path)
                         else -> imageText(path)
                     }
                     main.post { result.success(value) }
@@ -99,6 +120,42 @@ object NefaVision {
                 }
             }
         }
+    }
+
+    /**
+     * The most likely kinds of gym equipment in a photo, best first, as
+     * `[[id, confidence]]`. The photo is turned upright, centre-cropped to a
+     * square and scaled to 224 px, the same as in training.
+     */
+    private fun equipment(path: String): List<List<Any>> {
+        val size = 224
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(path, bounds)
+        var sample = 1
+        while (min(bounds.outWidth, bounds.outHeight) / (sample * 2) >= size * 2) sample *= 2
+        val decoded = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+            ?: throw IllegalArgumentException("Could not open that image.")
+        val turn = rotation(path)
+        val upright = if (turn == 0) decoded else Bitmap.createBitmap(
+            decoded, 0, 0, decoded.width, decoded.height, Matrix().apply { postRotate(turn.toFloat()) }, true,
+        )
+        val side = min(upright.width, upright.height)
+        val square = Bitmap.createBitmap(upright, (upright.width - side) / 2, (upright.height - side) / 2, side, side)
+        val input = Bitmap.createScaledBitmap(square, size, size, true)
+        val pixels = IntArray(size * size)
+        input.getPixels(pixels, 0, size, 0, 0, size, size)
+        val buffer = ByteBuffer.allocateDirect(4 * size * size * 3).order(ByteOrder.nativeOrder())
+        for (p in pixels) {
+            buffer.putFloat(((p shr 16) and 0xFF).toFloat())
+            buffer.putFloat(((p shr 8) and 0xFF).toFloat())
+            buffer.putFloat((p and 0xFF).toFloat())
+        }
+        buffer.rewind()
+        val labels = equipmentLabels
+        val out = Array(1) { FloatArray(labels.size) }
+        synchronized(this) { equipmentModel.run(buffer, out) }
+        return out[0].withIndex().sortedByDescending { it.value }.take(5)
+            .map { listOf(labels[it.index], it.value.toDouble()) }
     }
 
     private fun imageText(path: String): String {

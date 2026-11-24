@@ -10,6 +10,7 @@ import '../../settings/settings_controller.dart';
 import '../../workout/domain/session_models.dart';
 import '../../../shared/widgets/charts.dart';
 import '../../formcheck/form_check_screen.dart';
+import '../../equipment/equipment_screens.dart';
 import '../../history/domain/analytics.dart';
 import 'exercise_demo.dart';
 import '../../../shared/widgets/motion.dart';
@@ -25,6 +26,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
     final history = ref.watch(exerciseHistoryProvider(exerciseId)).valueOrNull ?? const [];
     final unit = ref.watch(settingsProvider).unit;
     if (record == null) return const PaperScaffold(body: PageBar());
+    final machines = ref.watch(equipmentGuideProvider).valueOrNull?.forExercise(exerciseId) ?? const [];
 
     final done = history.map((h) => h.$2).toList();
     final heaviest = done
@@ -82,6 +84,27 @@ class ExerciseDetailScreen extends ConsumerWidget {
                     for (final m in record.secondaryMuscles) Pill(label: m, background: c.sheet),
                   ],
                 ),
+                for (final m in machines.take(1))
+                  Pressable(
+                    onTap: () => openEquipment(context, m.id),
+                    semanticLabel: 'How to set up the ${m.name.toLowerCase()}',
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 14),
+                      child: Row(
+                        children: [
+                          Icon(Icons.tune_rounded, size: 18, color: c.accentInk),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'How to set up the ${m.name.toLowerCase()}',
+                              style: NefaType.style(14, 800, color: c.accentInk),
+                            ),
+                          ),
+                          Icon(Icons.chevron_right_rounded, size: 18, color: c.accentInk),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (done.isNotEmpty) ...[
                   const SizedBox(height: 24),
                   BoardCard(

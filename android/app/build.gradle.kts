@@ -32,6 +32,11 @@ android {
         versionName = flutter.versionName
     }
 
+    // The equipment model is memory-mapped straight from the APK.
+    androidResources {
+        noCompress += listOf("tflite")
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -51,5 +56,7 @@ dependencies {
     // On-device body pose for the squat form check (bundled model).
     implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
     implementation("androidx.exifinterface:exifinterface:1.4.1")
+    // Runs neFaRec's own equipment classifier (TensorFlow Lite).
+    implementation("com.google.ai.edge.litert:litert:1.4.2")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

@@ -1,5 +1,6 @@
 import ActivityKit
 import AVFoundation
+import CoreML
 import Flutter
 import PDFKit
 import UIKit
@@ -62,6 +63,7 @@ final class NefaVision {
           case "recognizeText": value = try recognizeText(url: url)
           case "pdfText": value = try pdfText(url: url)
           case "bodyPose": value = try bodyPose(url: url, fps: args["fps"] as? Double ?? 10)
+          case "equipment": value = try equipment(url: url)
           default:
             DispatchQueue.main.async { result(FlutterMethodNotImplemented) }
             return
@@ -80,6 +82,47 @@ final class NefaVision {
   private struct Failure: LocalizedError {
     let errorDescription: String?
     init(_ message: String) { errorDescription = message }
+  }
+
+  // MARK: Equipment
+
+  /// neFaRec's equipment model (MobileNetV3, the same one Android runs),
+  /// shipped as a Flutter asset and compiled on first use.
+  private static var equipmentModel: VNCoreMLModel?
+  private static let equipmentLock = NSLock()
+
+  private static func loadEquipmentModel() throws -> VNCoreMLModel {
+    equipmentLock.lock()
+    defer { equipmentLock.unlock() }
+    if let model = equipmentModel { return model }
+    let key = FlutterDartProject.lookupKey(forAsset: "assets/equipment/equipment.mlmodel")
+    guard let path = Bundle.main.path(forResource: key, ofType: nil) else {
+      throw Failure("The equipment model is missing from this build.")
+    }
+    let compiled = try MLModel.compileModel(at: URL(fileURLWithPath: path))
+    let config = MLModelConfiguration()
+    #if targetEnvironment(simulator)
+      config.computeUnits = .cpuOnly
+    #endif
+    let model = try VNCoreMLModel(for: MLModel(contentsOf: compiled, configuration: config))
+    try? FileManager.default.removeItem(at: compiled)
+    equipmentModel = model
+    return model
+  }
+
+  /// The most likely kinds of gym equipment in a photo, best first, as
+  /// `[[id, confidence]]`.
+  static func equipment(url: URL) throws -> [[Any]] {
+    guard let image = UIImage(contentsOfFile: url.path), let cg = image.cgImage else {
+      throw Failure("Could not open that image.")
+    }
+    let request = VNCoreMLRequest(model: try loadEquipmentModel())
+    request.imageCropAndScaleOption = .centerCrop
+    try VNImageRequestHandler(cgImage: cg, orientation: orientation(of: image), options: [:])
+      .perform([request])
+    let results = (request.results as? [VNClassificationObservation] ?? [])
+      .sorted { $0.confidence > $1.confidence }
+    return results.prefix(5).map { [$0.identifier, Double($0.confidence)] }
   }
 
   // MARK: Text

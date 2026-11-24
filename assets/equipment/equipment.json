@@ -1,0 +1,886 @@
+{
+  "about": "neFaRec's guide to common gym equipment. Each id matches a label of the on-device equipment model. 'labels' are words printed on the machine itself that the scanner looks for; 'exercises' are library ids, most useful first. 'image' is a public-domain photo from free-exercise-db of someone using it.",
+  "equipment": [
+    {
+      "id": "leg_press",
+      "name": "Leg press",
+      "also": [
+        "45° leg press",
+        "sled"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Leg_Press__0.jpg",
+      "trains": [
+        "quadriceps",
+        "glutes",
+        "hamstrings"
+      ],
+      "what": "You push a weighted platform away with your legs. A safe way to train your thighs heavy without balancing a bar.",
+      "setup": [
+        "Sit with your back and hips flat against the pad.",
+        "Put your feet flat in the middle of the platform, about shoulder-width apart.",
+        "Push the platform up a little, then swing the safety handles out before you start."
+      ],
+      "tip": "Lower until your knees come towards your chest, as long as your lower back stays on the pad.",
+      "mistake": "Locking your knees straight at the top. Keep a slight bend.",
+      "labels": [
+        "leg press",
+        "legpress"
+      ],
+      "exercises": [
+        "Leg_Press",
+        "Narrow_Stance_Leg_Press",
+        "Calf_Press_On_The_Leg_Press_Machine"
+      ]
+    },
+    {
+      "id": "leg_extension",
+      "name": "Leg extension",
+      "also": [
+        "quad extension"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Leg_Extensions__0.jpg",
+      "trains": [
+        "quadriceps"
+      ],
+      "what": "You sit and straighten your legs against a padded bar. It works the front of your thighs on their own.",
+      "setup": [
+        "Line your knees up with the machine's pivot, the round joint beside the seat.",
+        "Set the ankle pad so it rests on the front of your shins, just above your feet.",
+        "Sit back against the pad and hold the handles."
+      ],
+      "tip": "Lift for a count of one and lower for a count of two. A light weight is plenty.",
+      "mistake": "Swinging the weight up and letting it crash back down.",
+      "labels": [
+        "leg extension",
+        "leg ext",
+        "knee extension",
+        "quad"
+      ],
+      "exercises": [
+        "Leg_Extensions",
+        "Single-Leg_Leg_Extension"
+      ]
+    },
+    {
+      "id": "leg_curl",
+      "name": "Leg curl",
+      "also": [
+        "hamstring curl",
+        "lying or seated leg curl"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Seated_Leg_Curl__0.jpg",
+      "trains": [
+        "hamstrings"
+      ],
+      "what": "You bend your knees against a padded bar. It works the back of your thighs. Some you lie on, some you sit in.",
+      "setup": [
+        "Line your knees up with the machine's pivot.",
+        "Set the pad so it rests on the back of your lower legs, just above your heels.",
+        "On the seated version, bring the thigh pad down so it holds your legs in place."
+      ],
+      "tip": "Curl all the way, then lower slowly.",
+      "mistake": "Lifting your hips off the pad to move more weight.",
+      "labels": [
+        "leg curl",
+        "hamstring",
+        "prone curl",
+        "seated curl",
+        "lying curl"
+      ],
+      "exercises": [
+        "Seated_Leg_Curl",
+        "Lying_Leg_Curls",
+        "Standing_Leg_Curl"
+      ]
+    },
+    {
+      "id": "lat_pulldown",
+      "name": "Lat pulldown",
+      "also": [
+        "pulldown machine"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Wide-Grip_Lat_Pulldown__0.jpg",
+      "trains": [
+        "lats",
+        "middle back",
+        "biceps"
+      ],
+      "what": "You sit and pull a bar down from overhead. It builds the muscles you'd use for a pull-up.",
+      "setup": [
+        "Set the knee pad so your thighs are locked in when you sit.",
+        "Stand to grab the bar a little wider than your shoulders, then sit down with it.",
+        "Lean back slightly and keep your chest up."
+      ],
+      "tip": "Pull the bar to your upper chest, leading with your elbows.",
+      "mistake": "Pulling the bar behind your neck, or leaning far back to yank it down.",
+      "labels": [
+        "lat pulldown",
+        "lat pull",
+        "pulldown",
+        "pull down",
+        "lat"
+      ],
+      "exercises": [
+        "Wide-Grip_Lat_Pulldown",
+        "Close-Grip_Front_Lat_Pulldown",
+        "V-Bar_Pulldown",
+        "Straight-Arm_Pulldown"
+      ]
+    },
+    {
+      "id": "seated_row",
+      "name": "Seated row",
+      "also": [
+        "low row",
+        "cable row"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Seated_Cable_Rows__0.jpg",
+      "trains": [
+        "middle back",
+        "lats",
+        "biceps"
+      ],
+      "what": "You sit and pull handles towards your stomach. It works the middle of your back and helps your posture.",
+      "setup": [
+        "Sit with your feet on the footplate and your knees slightly bent.",
+        "Grab the handle with straight arms and sit up tall.",
+        "If there's a chest pad, set it so you just reach the handles with straight arms."
+      ],
+      "tip": "Squeeze your shoulder blades together at the end of each pull.",
+      "mistake": "Rocking your whole body back and forth to move the weight.",
+      "labels": [
+        "seated row",
+        "low row",
+        "mid row",
+        "row"
+      ],
+      "exercises": [
+        "Seated_Cable_Rows",
+        "Leverage_Iso_Row",
+        "Leverage_High_Row"
+      ]
+    },
+    {
+      "id": "chest_press",
+      "name": "Chest press",
+      "also": [
+        "seated chest press",
+        "machine bench press"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Machine_Bench_Press__0.jpg",
+      "trains": [
+        "chest",
+        "shoulders",
+        "triceps"
+      ],
+      "what": "You sit and push handles away from your chest. Like a bench press, but the machine keeps the path steady.",
+      "setup": [
+        "Set the seat so the handles are level with the middle of your chest.",
+        "Sit back with your shoulder blades against the pad.",
+        "Some machines have a foot lever that brings the handles forward to start."
+      ],
+      "tip": "Push out, then let the handles come back until you feel a stretch across your chest.",
+      "mistake": "Setting the seat so low that the handles sit up at your shoulders.",
+      "labels": [
+        "chest press",
+        "bench press",
+        "vertical press",
+        "incline press"
+      ],
+      "exercises": [
+        "Machine_Bench_Press",
+        "Leverage_Chest_Press",
+        "Leverage_Incline_Chest_Press"
+      ]
+    },
+    {
+      "id": "shoulder_press",
+      "name": "Shoulder press",
+      "also": [
+        "overhead press machine"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/shoulder_press.jpg",
+      "trains": [
+        "shoulders",
+        "triceps"
+      ],
+      "what": "You sit and push handles up overhead. It builds your shoulders without balancing dumbbells.",
+      "setup": [
+        "Set the seat so the handles start just above your shoulders.",
+        "Sit with your back flat against the pad.",
+        "Hold the handles with your wrists straight."
+      ],
+      "tip": "Press up without slamming your elbows straight at the top.",
+      "mistake": "Arching your lower back off the pad.",
+      "labels": [
+        "shoulder press",
+        "overhead press",
+        "military press",
+        "deltoid press"
+      ],
+      "exercises": [
+        "Machine_Shoulder_Military_Press",
+        "Leverage_Shoulder_Press",
+        "Dumbbell_Shoulder_Press"
+      ]
+    },
+    {
+      "id": "pec_deck",
+      "name": "Pec deck",
+      "also": [
+        "butterfly",
+        "pec fly",
+        "rear delt machine"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Butterfly__0.jpg",
+      "trains": [
+        "chest",
+        "shoulders"
+      ],
+      "what": "You bring two arms or handles together in front of you. Facing the other way, it works the back of your shoulders.",
+      "setup": [
+        "Set the seat so the handles are at chest height.",
+        "For your chest, sit with your back on the pad and bring the handles together in front of you.",
+        "For the back of your shoulders, face the pad and push the handles back and out."
+      ],
+      "tip": "Keep a soft bend in your elbows the whole time.",
+      "mistake": "Going so heavy that your shoulders roll forward.",
+      "labels": [
+        "pec deck",
+        "pec fly",
+        "butterfly",
+        "rear delt",
+        "fly"
+      ],
+      "exercises": [
+        "Butterfly",
+        "Reverse_Machine_Flyes"
+      ]
+    },
+    {
+      "id": "smith_machine",
+      "name": "Smith machine",
+      "also": [
+        "guided barbell"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/smith_machine.jpg",
+      "trains": [
+        "quadriceps",
+        "chest",
+        "shoulders"
+      ],
+      "what": "A barbell that slides up and down on fixed rails. Good for learning squats and presses, because the bar can't drift forward or back.",
+      "setup": [
+        "Twist the bar to unhook it from the hooks, and twist back to rack it.",
+        "Set the safety stoppers just below the lowest point of your lift.",
+        "Put the bench or your feet in place first, then unhook the bar."
+      ],
+      "tip": "Start with the empty bar. On many Smith machines it weighs less than a normal 20 kg bar.",
+      "mistake": "Skipping the safety stoppers.",
+      "labels": [
+        "smith"
+      ],
+      "exercises": [
+        "Smith_Machine_Squat",
+        "Smith_Machine_Bench_Press",
+        "Smith_Machine_Incline_Bench_Press",
+        "Smith_Machine_Overhead_Shoulder_Press",
+        "Smith_Machine_Calf_Raise"
+      ]
+    },
+    {
+      "id": "hack_squat",
+      "name": "Hack squat",
+      "also": [
+        "sled squat"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Hack_Squat__0.jpg",
+      "trains": [
+        "quadriceps",
+        "glutes"
+      ],
+      "what": "You squat with your back against a sliding pad. It works your thighs hard while the machine keeps you steady.",
+      "setup": [
+        "Stand with your back and shoulders against the pads.",
+        "Put your feet in the middle of the platform, about shoulder-width apart.",
+        "Push up a little and release the safety handles before you lower."
+      ],
+      "tip": "Go down until your thighs are about level with the platform, if your knees feel fine.",
+      "mistake": "Letting your heels lift off the platform.",
+      "labels": [
+        "hack squat",
+        "hack"
+      ],
+      "exercises": [
+        "Hack_Squat",
+        "Narrow_Stance_Hack_Squats"
+      ]
+    },
+    {
+      "id": "cable_station",
+      "name": "Cable station",
+      "also": [
+        "cable crossover",
+        "functional trainer",
+        "pulley machine"
+      ],
+      "kind": "cable",
+      "image": "assets/equipment/images/cable_station.jpg",
+      "trains": [
+        "chest",
+        "shoulders",
+        "triceps",
+        "abdominals"
+      ],
+      "what": "Weight stacks with pulleys you can slide up or down. One machine for dozens of exercises.",
+      "setup": [
+        "Pull the pin on the column to move each pulley up or down.",
+        "Clip on a handle, rope or bar.",
+        "Choose the weight with the pin in the stack."
+      ],
+      "tip": "Cables keep the muscle working the whole way, so light weights feel harder than you expect.",
+      "mistake": "Letting the weight stack slam down between reps.",
+      "labels": [
+        "crossover",
+        "cross over",
+        "functional trainer",
+        "dual pulley",
+        "cable"
+      ],
+      "exercises": [
+        "Cable_Crossover",
+        "Face_Pull",
+        "Triceps_Pushdown_-_Rope_Attachment",
+        "Cable_Crunch",
+        "Low_Cable_Crossover"
+      ]
+    },
+    {
+      "id": "triceps_pushdown",
+      "name": "Triceps pushdown",
+      "also": [
+        "high pulley",
+        "triceps station"
+      ],
+      "kind": "cable",
+      "image": "assets/exercises/demos/Triceps_Pushdown__0.jpg",
+      "trains": [
+        "triceps"
+      ],
+      "what": "A cable from a high pulley that you push down to straighten your arms. It works the back of your upper arms.",
+      "setup": [
+        "Clip a rope or short bar to the top pulley.",
+        "Stand close, with your elbows tucked into your sides.",
+        "Choose a weight you can push down 10 times without leaning over it."
+      ],
+      "tip": "Only your forearms move. Your elbows stay pinned to your sides.",
+      "mistake": "Leaning over the bar and pushing with your bodyweight.",
+      "labels": [
+        "tricep",
+        "triceps",
+        "pushdown",
+        "push down"
+      ],
+      "exercises": [
+        "Triceps_Pushdown",
+        "Triceps_Pushdown_-_Rope_Attachment",
+        "Triceps_Pushdown_-_V-Bar_Attachment",
+        "Reverse_Grip_Triceps_Pushdown"
+      ]
+    },
+    {
+      "id": "calf_raise",
+      "name": "Calf raise machine",
+      "also": [
+        "standing or seated calf raise"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Seated_Calf_Raise__0.jpg",
+      "trains": [
+        "calves"
+      ],
+      "what": "You push up onto your toes against a weight. It works your calves.",
+      "setup": [
+        "Stand or sit with the balls of your feet on the edge of the step.",
+        "Set the shoulder or knee pads so they press on you before you lift.",
+        "Let your heels drop below the step to start."
+      ],
+      "tip": "Pause for a second at the top and at the bottom.",
+      "mistake": "Bouncing through quick, short reps.",
+      "labels": [
+        "calf",
+        "calves"
+      ],
+      "exercises": [
+        "Standing_Calf_Raises",
+        "Seated_Calf_Raise",
+        "Calf_Press"
+      ]
+    },
+    {
+      "id": "hip_abduction",
+      "name": "Hip abduction machine",
+      "also": [
+        "inner and outer thigh machine",
+        "hip adduction"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/hip_abduction.jpg",
+      "trains": [
+        "glutes",
+        "abductors",
+        "adductors"
+      ],
+      "what": "You push your knees apart, or squeeze them together, against pads. Out works the side of your hips; in works your inner thighs.",
+      "setup": [
+        "Sit with your back against the pad and your knees against the knee pads.",
+        "Pads on the outside of your knees: push out. Pads on the inside: squeeze in.",
+        "Many machines switch between the two with a lever or by flipping the pads."
+      ],
+      "tip": "Move slowly and hold the widest point for a second.",
+      "mistake": "Flinging the pads open with momentum.",
+      "labels": [
+        "abduction",
+        "adduction",
+        "abductor",
+        "adductor",
+        "hip",
+        "inner thigh",
+        "outer thigh"
+      ],
+      "exercises": [
+        "Thigh_Abductor",
+        "Thigh_Adductor"
+      ]
+    },
+    {
+      "id": "ab_crunch",
+      "name": "Ab crunch machine",
+      "also": [
+        "abdominal machine"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/ab_crunch.jpg",
+      "trains": [
+        "abdominals"
+      ],
+      "what": "You curl forward against a weight. It works your stomach muscles.",
+      "setup": [
+        "Set the seat so the chest pad or handles sit at your upper chest.",
+        "Hook your feet under the rollers, if there are any.",
+        "Hold the handles lightly. Your abs should do the work."
+      ],
+      "tip": "Curl your ribs towards your hips, then come back up slowly.",
+      "mistake": "Pulling the weight with your arms.",
+      "labels": [
+        "abdominal",
+        "ab crunch",
+        "crunch",
+        "abs"
+      ],
+      "exercises": [
+        "Ab_Crunch_Machine",
+        "Cable_Crunch",
+        "Crunches"
+      ]
+    },
+    {
+      "id": "back_extension",
+      "name": "Back extension bench",
+      "also": [
+        "hyperextension",
+        "roman chair"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/back_extension.jpg",
+      "trains": [
+        "lower back",
+        "glutes",
+        "hamstrings"
+      ],
+      "what": "You hinge forward over a pad and lift your body back up. It works your lower back and glutes.",
+      "setup": [
+        "Set the pad so it sits just below your hip bones.",
+        "Hook your heels under the foot pads.",
+        "Cross your arms over your chest to start."
+      ],
+      "tip": "Come up until your body is in a straight line, and no higher.",
+      "mistake": "Arching back hard past straight.",
+      "labels": [
+        "back extension",
+        "hyperextension",
+        "lower back",
+        "roman chair"
+      ],
+      "exercises": [
+        "Hyperextensions_Back_Extensions",
+        "Superman"
+      ]
+    },
+    {
+      "id": "dip_machine",
+      "name": "Dip machine",
+      "also": [
+        "seated dip",
+        "assisted dip"
+      ],
+      "kind": "machine",
+      "image": "assets/equipment/images/dip_machine.jpg",
+      "trains": [
+        "triceps",
+        "chest"
+      ],
+      "what": "You push handles down beside you to straighten your arms. It works your triceps and chest. On assisted ones, the weight helps lift you.",
+      "setup": [
+        "Set the seat so the handles start at about chest height.",
+        "On an assisted dip machine, more weight on the stack means more help.",
+        "Keep your shoulders down, away from your ears."
+      ],
+      "tip": "Lower until your elbows reach about a right angle.",
+      "mistake": "Shrugging your shoulders up as you push.",
+      "labels": [
+        "dip",
+        "assist",
+        "triceps press"
+      ],
+      "exercises": [
+        "Dip_Machine",
+        "Machine_Triceps_Extension",
+        "Bench_Dips"
+      ]
+    },
+    {
+      "id": "dip_station",
+      "name": "Dip station",
+      "also": [
+        "parallel bars",
+        "power tower"
+      ],
+      "kind": "bodyweight",
+      "image": "assets/exercises/demos/Dips_-_Triceps_Version__0.jpg",
+      "trains": [
+        "triceps",
+        "chest",
+        "abdominals"
+      ],
+      "what": "Two parallel bars you hold yourself up on. Use them for dips, or hang your legs for knee and leg raises.",
+      "setup": [
+        "Grab the bars and jump or step up to straight arms.",
+        "Cross your feet behind you.",
+        "Lean forward a little to work your chest, or stay upright for your triceps."
+      ],
+      "tip": "Too hard for now? Start with bench dips, or knee raises on the bars.",
+      "mistake": "Dropping too deep and straining your shoulders.",
+      "labels": [
+        "dip",
+        "knee raise",
+        "vkr"
+      ],
+      "exercises": [
+        "Dips_-_Triceps_Version",
+        "Dips_-_Chest_Version",
+        "Hanging_Leg_Raise"
+      ]
+    },
+    {
+      "id": "preacher_curl",
+      "name": "Preacher curl bench",
+      "also": [
+        "preacher bench",
+        "arm curl"
+      ],
+      "kind": "machine",
+      "image": "assets/exercises/demos/Preacher_Curl__0.jpg",
+      "trains": [
+        "biceps"
+      ],
+      "what": "An angled pad your upper arms rest on while you curl. It keeps your body out of it so your biceps do all the work.",
+      "setup": [
+        "Set the seat so your armpits sit on top of the pad.",
+        "Rest the backs of your upper arms flat on the pad.",
+        "Use an EZ bar or a dumbbell."
+      ],
+      "tip": "Lower slowly until your arms are nearly straight.",
+      "mistake": "Lifting your elbows off the pad.",
+      "labels": [
+        "preacher",
+        "arm curl",
+        "biceps curl",
+        "bicep"
+      ],
+      "exercises": [
+        "Preacher_Curl",
+        "One_Arm_Dumbbell_Preacher_Curl",
+        "Machine_Preacher_Curls"
+      ]
+    },
+    {
+      "id": "bench",
+      "name": "Weight bench",
+      "also": [
+        "flat bench",
+        "adjustable bench"
+      ],
+      "kind": "free weight",
+      "image": "assets/exercises/demos/Dumbbell_Bench_Press__0.jpg",
+      "trains": [
+        "chest",
+        "shoulders",
+        "middle back"
+      ],
+      "what": "A padded bench for pressing, rowing and seated work. Adjustable ones tilt up for incline exercises.",
+      "setup": [
+        "Pull the pin or lever under the back pad to change the angle.",
+        "Keep it flat for presses and rows, or tilt it up for incline work.",
+        "Check the pin has clicked in before you sit down."
+      ],
+      "tip": "Plant your feet flat on the floor when you press.",
+      "mistake": "Training on a back pad that hasn't locked in place.",
+      "labels": [
+        "bench"
+      ],
+      "exercises": [
+        "Dumbbell_Bench_Press",
+        "Incline_Dumbbell_Press",
+        "One-Arm_Dumbbell_Row",
+        "Bench_Dips",
+        "Dumbbell_Step_Ups"
+      ]
+    },
+    {
+      "id": "dumbbells",
+      "name": "Dumbbells",
+      "also": [
+        "dumbbell rack"
+      ],
+      "kind": "free weight",
+      "image": "assets/exercises/demos/Dumbbell_Shoulder_Press__0.jpg",
+      "trains": [
+        "chest",
+        "shoulders",
+        "biceps",
+        "quadriceps"
+      ],
+      "what": "A short handle with a weight on each end, one for each hand. The most useful thing in the gym for a beginner.",
+      "setup": [
+        "Lift them off the rack with a flat back, the way you'd lift a box.",
+        "Start lighter than you think. You can always go up next set.",
+        "Put them back on the rack in order when you're done."
+      ],
+      "tip": "Use the same weight in both hands so you can see if one side is weaker.",
+      "mistake": "Dropping them from height at the end of a set.",
+      "labels": [
+        "dumbbell"
+      ],
+      "exercises": [
+        "Goblet_Squat",
+        "Dumbbell_Bench_Press",
+        "One-Arm_Dumbbell_Row",
+        "Dumbbell_Shoulder_Press",
+        "Dumbbell_Bicep_Curl",
+        "Dumbbell_Lunges"
+      ]
+    },
+    {
+      "id": "barbell",
+      "name": "Barbell",
+      "also": [
+        "Olympic bar"
+      ],
+      "kind": "free weight",
+      "image": "assets/exercises/demos/Barbell_Deadlift__1.jpg",
+      "trains": [
+        "quadriceps",
+        "hamstrings",
+        "chest",
+        "middle back"
+      ],
+      "what": "A long bar you load with plates. It's what squats, deadlifts and the bench press are done with.",
+      "setup": [
+        "A standard long bar weighs 20 kg on its own.",
+        "Load the same plates on both sides and put a collar on each end.",
+        "For squats and the bench press, set the rack's safety bars first."
+      ],
+      "tip": "Learn each lift with just the bar before you add plates.",
+      "mistake": "Loading uneven plates, or skipping the collars.",
+      "labels": [
+        "olympic bar",
+        "barbell"
+      ],
+      "exercises": [
+        "Barbell_Squat",
+        "Barbell_Deadlift",
+        "Barbell_Bench_Press_-_Medium_Grip",
+        "Bent_Over_Barbell_Row",
+        "Standing_Military_Press",
+        "Barbell_Curl"
+      ]
+    },
+    {
+      "id": "plates",
+      "name": "Weight plates",
+      "also": [
+        "discs",
+        "bumper plates"
+      ],
+      "kind": "free weight",
+      "image": "assets/exercises/demos/Front_Plate_Raise__0.jpg",
+      "trains": [],
+      "what": "The discs you load onto bars and plate-loaded machines. The number on each one is its weight.",
+      "setup": [
+        "Check whether the number is in kg or lb. It's usually printed next to it.",
+        "Load the heaviest plates on first, then the lighter ones.",
+        "Carry them with both hands, by the edges or the handle holes."
+      ],
+      "tip": "To know what you lifted, add both sides and the bar: a 20 kg bar with a 10 kg plate each side is 40 kg.",
+      "mistake": "Leaving your plates on the bar or machine when you finish.",
+      "labels": [
+        "weight plate",
+        "bumper plate"
+      ],
+      "exercises": [
+        "Front_Plate_Raise",
+        "Plate_Twist"
+      ]
+    },
+    {
+      "id": "treadmill",
+      "name": "Treadmill",
+      "also": [
+        "running machine"
+      ],
+      "kind": "cardio",
+      "image": "assets/equipment/images/treadmill.jpg",
+      "trains": [
+        "quadriceps",
+        "calves"
+      ],
+      "what": "A moving belt you walk or run on. Good for warming up, or for steady cardio.",
+      "setup": [
+        "Clip the safety key to your clothes. If you slip, the belt stops.",
+        "Stand on the side rails, press start, and step on once the belt is moving slowly.",
+        "Raise the speed a little at a time."
+      ],
+      "tip": "A brisk walk with some incline makes a good warm-up or finisher.",
+      "mistake": "Holding on to the handrails the whole time.",
+      "labels": [
+        "treadmill",
+        "km/h",
+        "mph"
+      ],
+      "exercises": [
+        "Walking_Treadmill",
+        "Jogging_Treadmill",
+        "Running_Treadmill"
+      ]
+    },
+    {
+      "id": "bike",
+      "name": "Exercise bike",
+      "also": [
+        "stationary bike",
+        "spin bike"
+      ],
+      "kind": "cardio",
+      "image": "assets/equipment/images/bike.jpg",
+      "trains": [
+        "quadriceps",
+        "hamstrings",
+        "calves"
+      ],
+      "what": "A bike that doesn't go anywhere. Easy on your knees, so it's a good first piece of cardio.",
+      "setup": [
+        "Stand next to it and set the seat to about hip height.",
+        "At the bottom of each pedal stroke your knee should still be slightly bent.",
+        "Strap your feet into the pedals."
+      ],
+      "tip": "Turn the resistance up until it feels like riding up a gentle hill.",
+      "mistake": "Riding with the seat too low, which strains your knees.",
+      "labels": [
+        "bike",
+        "cycle",
+        "spin",
+        "rpm"
+      ],
+      "exercises": [
+        "Bicycling_Stationary",
+        "Recumbent_Bike"
+      ]
+    },
+    {
+      "id": "rower",
+      "name": "Rowing machine",
+      "also": [
+        "indoor rower",
+        "erg"
+      ],
+      "kind": "cardio",
+      "image": "assets/equipment/images/rower.jpg",
+      "trains": [
+        "middle back",
+        "quadriceps",
+        "hamstrings"
+      ],
+      "what": "You slide back and forth pulling a handle, like rowing a boat. It works almost your whole body.",
+      "setup": [
+        "Strap your feet in so the strap crosses the widest part of your foot.",
+        "Hold the handle with straight arms and bent knees.",
+        "Push with your legs first, then lean back slightly, then pull with your arms."
+      ],
+      "tip": "Legs, body, arms on the way back. Arms, body, legs on the way in.",
+      "mistake": "Pulling with your arms before your legs have pushed.",
+      "labels": [
+        "rower",
+        "rowing",
+        "concept2",
+        "/500m"
+      ],
+      "exercises": [
+        "Rowing_Stationary"
+      ]
+    },
+    {
+      "id": "stair_climber",
+      "name": "Stair climber",
+      "also": [
+        "stair master",
+        "step mill"
+      ],
+      "kind": "cardio",
+      "image": "assets/equipment/images/stair_climber.jpg",
+      "trains": [
+        "glutes",
+        "quadriceps",
+        "calves"
+      ],
+      "what": "Moving stairs that never end. Tough cardio that also works your legs.",
+      "setup": [
+        "Hold the rails lightly for balance, not to carry your weight.",
+        "Start at a slow level for the first few minutes.",
+        "Stand tall and take full steps."
+      ],
+      "tip": "Ten minutes at a steady pace is a solid warm-up.",
+      "mistake": "Leaning on the rails so your legs do less.",
+      "labels": [
+        "stair",
+        "stepmill",
+        "step mill",
+        "climber"
+      ],
+      "exercises": [
+        "Stairmaster",
+        "Step_Mill"
+      ]
+    }
+  ]
+}
